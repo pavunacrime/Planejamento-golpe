@@ -11,6 +11,7 @@
             --paper-bg: #f4f1ea;
             --text-color: #2b2b2b;
             --accent-red: #c0392b;
+            --accent-green: #27ae60;
         }
 
         * {
@@ -113,6 +114,11 @@
             padding-bottom: 15px;
         }
 
+        .board-header h1 {
+            font-size: 1.8rem;
+            color: #fff;
+        }
+
         .board-header input {
             background: transparent;
             border: none;
@@ -120,7 +126,7 @@
             font-size: 1.8rem;
             font-family: inherit;
             font-weight: bold;
-            width: 70%;
+            width: 60%;
             border-bottom: 1px dashed transparent;
         }
 
@@ -132,7 +138,7 @@
         /* Grade do Quadro */
         .board-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 25px;
         }
 
@@ -176,11 +182,11 @@
             padding-bottom: 5px;
         }
 
-        /* Alvo Principal */
+        /* Alvo Principal - Imagem Inteira */
         .target-img-container {
             width: 100%;
-            height: 180px;
-            background: #ddd;
+            max-height: 250px;
+            background: #222;
             border: 2px dashed #bbb;
             display: flex;
             align-items: center;
@@ -192,8 +198,10 @@
 
         .target-img-container img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            height: auto;
+            max-height: 240px;
+            object-fit: contain; /* Mantém a imagem inteira sem cortar */
+            display: block;
         }
 
         .target-img-container input[type="file"] {
@@ -206,9 +214,37 @@
 
         .target-upload-text {
             font-size: 0.8rem;
-            color: #666;
+            color: #aaa;
             text-align: center;
-            padding: 10px;
+            padding: 20px;
+        }
+
+        /* Marcações Verdes abaixo da imagem */
+        .target-checks {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .target-check-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .target-check-item input[type="checkbox"] {
+            accent-color: var(--accent-green);
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .target-check-item.checked span {
+            color: var(--accent-green);
+            font-weight: bold;
         }
 
         /* Listas de Missões */
@@ -239,7 +275,7 @@
             margin-top: 12px;
         }
 
-        .input-row input, .input-row textarea {
+        .input-row input {
             flex-grow: 1;
             padding: 6px;
             font-family: inherit;
@@ -258,7 +294,7 @@
 
         textarea.notes {
             width: 100%;
-            height: 100px;
+            height: 120px;
             resize: vertical;
             border: 1px solid #ccc;
             padding: 8px;
@@ -271,15 +307,16 @@
 
     <aside>
         <h2>Planejamentos</h2>
-        <ul class="heist-list" id="heistList">
-            <!-- Preenchido via JS -->
-        </ul>
+        <ul class="heist-list" id="heistList"></ul>
         <button class="btn" id="newHeistBtn">+ Novo Golpe</button>
     </aside>
 
     <main>
         <div class="board-header">
-            <input type="text" id="heistTitle" placeholder="Nome do Golpe...">
+            <div style="display: flex; align-items: center; gap: 10px; width: 80%;">
+                <span style="font-size: 1.8rem; font-weight: bold;">Planejamento:</span>
+                <input type="text" id="heistTitle" placeholder="Nome do Golpe...">
+            </div>
             <button class="btn" id="deleteHeistBtn" style="background: #c0392b; color: white; padding: 6px 12px; font-size: 0.8rem;">Excluir Golpe</button>
         </div>
 
@@ -289,10 +326,22 @@
                 <div class="pin"></div>
                 <h3>Alvo Principal</h3>
                 <div class="target-img-container" id="targetImgContainer">
-                    <span class="target-upload-text">Clique ou adicione uma foto aqui</span>
+                    <span class="target-upload-text">Clique para enviar a foto inteira</span>
                     <input type="file" id="targetImageInput" accept="image/*">
                 </div>
-                <input type="text" id="targetName" placeholder="Nome do Alvo / Tesouro" style="width:100%; padding:6px; font-family:inherit; border:1px solid #ccc;">
+                <input type="text" id="targetName" placeholder="Nome / Descrição do Alvo" style="width:100%; padding:6px; font-family:inherit; border:1px solid #ccc; margin-bottom: 10px;">
+                
+                <!-- Opções de Marcação Verde -->
+                <div class="target-checks" id="targetChecksContainer">
+                    <label class="target-check-item">
+                        <input type="checkbox" id="checkOpt1" onchange="updateTargetCheck(0)">
+                        <span>Opção / Alvo Selecionado</span>
+                    </label>
+                    <label class="target-check-item">
+                        <input type="checkbox" id="checkOpt2" onchange="updateTargetCheck(1)">
+                        <span>Prioridade Máxima</span>
+                    </label>
+                </div>
             </div>
 
             <!-- MISSÕES PREPARATÓRIAS -->
@@ -317,7 +366,7 @@
 
     <script>
         let heists = JSON.parse(localStorage.getItem('heists')) || [
-            { id: 1, title: 'Golpe Principal', targetName: 'Cofre Central', targetImage: '', preps: [{text: 'Conseguir disfarces', done: false}], notes: '' }
+            { id: 1, title: 'Golpe do Cassino', targetName: 'Cofre Principal', targetImage: '', targetChecks: [false, false], preps: [{text: 'Conseguir disfarces', done: false}], notes: '' }
         ];
         let currentHeistId = heists[0].id;
 
@@ -326,9 +375,10 @@
         const newHeistBtn = document.getElementById('newHeistBtn');
         const deleteHeistBtn = document.getElementById('deleteHeistBtn');
         
-        const targetImageInput = document.getElementById('targetImageInput');
         const targetImgContainer = document.getElementById('targetImgContainer');
         const targetNameEl = document.getElementById('targetName');
+        const checkOpt1 = document.getElementById('checkOpt1');
+        const checkOpt2 = document.getElementById('checkOpt2');
 
         const prepListEl = document.getElementById('prepList');
         const newPrepInput = document.getElementById('newPrepInput');
@@ -368,14 +418,21 @@
             targetNameEl.value = h.targetName || '';
             boardNotesEl.value = h.notes || '';
 
-            // Renderizar Imagem do Alvo
+            if (!h.targetChecks) h.targetChecks = [false, false];
+            checkOpt1.checked = h.targetChecks[0];
+            checkOpt2.checked = h.targetChecks[1];
+            
+            // Atualizar classes visuais das marcações verdes
+            checkOpt1.parentElement.className = `target-check-item ${h.targetChecks[0] ? 'checked' : ''}`;
+            checkOpt2.parentElement.className = `target-check-item ${h.targetChecks[1] ? 'checked' : ''}`;
+
+            // Renderizar Imagem Inteira
             if (h.targetImage) {
                 targetImgContainer.innerHTML = `<img src="${h.targetImage}" alt="Alvo"><input type="file" id="targetImageInput" accept="image/*">`;
-                bindImageUpload();
             } else {
-                targetImgContainer.innerHTML = `<span class="target-upload-text">Clique ou adicione uma foto aqui</span><input type="file" id="targetImageInput" accept="image/*">`;
-                bindImageUpload();
+                targetImgContainer.innerHTML = `<span class="target-upload-text">Clique para enviar a foto inteira</span><input type="file" id="targetImageInput" accept="image/*">`;
             }
+            bindImageUpload();
 
             // Renderizar Missões
             prepListEl.innerHTML = '';
@@ -392,21 +449,31 @@
 
         function bindImageUpload() {
             const input = document.getElementById('targetImageInput');
-            input.onchange = (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(uploadEvent) {
-                        const h = getCurrentHeist();
-                        h.targetImage = uploadEvent.target.result;
-                        saveAndRender();
-                    };
-                    reader.readAsDataURL(file);
-                }
-            };
+            if(input) {
+                input.onchange = (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(uploadEvent) {
+                            const h = getCurrentHeist();
+                            h.targetImage = uploadEvent.target.result;
+                            saveAndRender();
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                };
+            }
         }
 
-        // Eventos de alteração
+        window.updateTargetCheck = (index) => {
+            const h = getCurrentHeist();
+            if (!h.targetChecks) h.targetChecks = [false, false];
+            if(index === 0) h.targetChecks[0] = checkOpt1.checked;
+            if(index === 1) h.targetChecks[1] = checkOpt2.checked;
+            localStorage.setItem('heists', JSON.stringify(heists));
+            renderActiveHeist();
+        };
+
         heistTitleEl.oninput = (e) => {
             getCurrentHeist().title = e.target.value;
             localStorage.setItem('heists', JSON.stringify(heists));
@@ -440,7 +507,7 @@
 
         newHeistBtn.onclick = () => {
             const newId = Date.now();
-            heists.push({ id: newId, title: 'Novo Golpe', targetName: '', targetImage: '', preps: [], notes: '' });
+            heists.push({ id: newId, title: 'Novo Golpe', targetName: '', targetImage: '', targetChecks: [false, false], preps: [], notes: '' });
             currentHeistId = newId;
             saveAndRender();
         };
@@ -455,7 +522,6 @@
             saveAndRender();
         };
 
-        // Inicializar
         renderSidebar();
         renderActiveHeist();
     </script>
