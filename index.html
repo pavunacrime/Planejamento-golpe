@@ -3,15 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Planejamento de Golpes</title>
+    <title>Painel de Planejamento de Golpes - GTA V Style</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Special+Elite&display=swap');
+
         :root {
-            --board-bg: #2c221e;
-            --paper-bg: #f4ecd8;
-            --polaroid-bg: #fff;
-            --text-dark: #222;
-            --accent-red: #b33939;
-            --accent-yellow: #f1c40f;
+            --board-white: #e9ecef;
+            --board-frame: #3a2e2b;
+            --blueprint-bg: #1c3d5a;
+            --polaroid-bg: #f8f9fa;
+            --pin-red: #c0392b;
+            --pin-yellow: #f39c12;
+            --pin-blue: #2980b9;
+            --marker-ink: #111;
         }
 
         * {
@@ -21,72 +25,101 @@
         }
 
         body {
-            background-color: var(--board-bg);
-            background-image: radial-gradient(circle, #3d3028 10%, #2c221e 90%);
-            color: var(--paper-bg);
-            font-family: 'Courier New', Courier, monospace, sans-serif;
+            background-color: #1a1512;
+            background-image: radial-gradient(circle, #2c2420 10%, #15100e 90%);
+            color: var(--marker-ink);
+            font-family: 'Special Elite', monospace, sans-serif;
             min-height: 100vh;
-            padding: 20px;
+            padding: 10px;
+            overflow-x: auto;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 20px;
-            border-bottom: 2px dashed #5a4539;
-            padding-bottom: 15px;
+        /* Luminária superior estilo GTA */
+        .lamp-fixture {
+            width: 100%;
+            max-width: 1600px;
+            margin: 0 auto 5px auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .lamp-mount {
+            display: flex;
+            justify-content: space-between;
+            width: 90%;
+            height: 15px;
+            background: #222;
+        }
+        .lamp-arm {
+            width: 15px;
+            background: #555;
+        }
+        .lamp-bar {
+            width: 60%;
+            height: 25px;
+            background: linear-gradient(to bottom, #444, #111);
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(255,255,150,0.2);
+        }
+        .lamp-light {
+            width: 80%;
+            height: 8px;
+            background: #fff9c4;
+            box-shadow: 0 0 20px 5px rgba(255, 249, 196, 0.6);
+            border-radius: 4px;
         }
 
-        h1 {
-            font-size: 2.5rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--accent-yellow);
-            text-shadow: 2px 2px #000;
-        }
-
-        .container {
+        .main-layout {
             display: grid;
-            grid-template-columns: 300px 1fr;
+            grid-template-columns: 280px 1fr;
             gap: 20px;
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
         }
 
-        @media(max-width: 900px) {
-            .container {
+        @media(max-width: 1000px) {
+            .main-layout {
                 grid-template-columns: 1fr;
             }
         }
 
-        /* Sidebar de Golpes */
         .sidebar {
-            background: rgba(0, 0, 0, 0.3);
-            border: 2px solid #5a4539;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid #4a3b32;
             padding: 15px;
-            border-radius: 4px;
+            border-radius: 6px;
+            color: #d1c7bd;
+            height: fit-content;
         }
 
         .sidebar h2 {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             margin-bottom: 10px;
-            border-bottom: 1px solid #5a4539;
+            border-bottom: 1px solid #4a3b32;
             padding-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #f1c40f;
         }
 
         .heist-list {
             list-style: none;
-            margin-bottom: 15px;
-            max-height: 300px;
+            max-height: 250px;
             overflow-y: auto;
+            margin-bottom: 15px;
         }
 
         .heist-item {
-            padding: 8px 10px;
+            padding: 8px;
             margin-bottom: 5px;
             background: rgba(255, 255, 255, 0.05);
             cursor: pointer;
-            border-left: 4px solid transparent;
+            border-left: 3px solid transparent;
             transition: 0.2s;
+            font-size: 0.9rem;
         }
 
         .heist-item:hover {
@@ -94,28 +127,36 @@
         }
 
         .heist-item.active {
-            border-left-color: var(--accent-yellow);
-            background: rgba(241, 196, 15, 0.1);
+            border-left-color: #f1c40f;
+            background: rgba(241, 196, 15, 0.15);
             font-weight: bold;
+            color: #fff;
         }
 
         .form-group {
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
-        input, textarea, select {
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
+
+        input[type="text"], textarea, select {
             width: 100%;
             padding: 8px;
-            background: #1a1412;
-            border: 1px solid #5a4539;
-            color: var(--paper-bg);
+            background: #110d0b;
+            border: 1px solid #4a3b32;
+            color: #f4ecd8;
             font-family: inherit;
             border-radius: 3px;
+            font-size: 0.9rem;
         }
 
         button {
-            background: var(--accent-yellow);
-            color: #000;
+            background: #f1c40f;
+            color: #111;
             border: none;
             padding: 8px 12px;
             font-weight: bold;
@@ -123,6 +164,7 @@
             text-transform: uppercase;
             width: 100%;
             border-radius: 3px;
+            font-family: 'Special Elite', monospace;
             transition: 0.2s;
         }
 
@@ -130,168 +172,308 @@
             background: #d4ac0d;
         }
 
-        /* Quadro Estilo GTA V */
-        .board {
-            background-color: var(--paper-bg);
-            color: var(--text-dark);
-            border: 10px solid #4a3525;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.7), inset 0 0 50px rgba(0,0,0,0.1);
-            padding: 20px;
-            min-height: 600px;
+        /* QUADRO DO GTA */
+        .gta-board {
+            background-color: #f0eeea;
+            background-image: 
+                radial-gradient(#dcd5c9 15%, transparent 16%),
+                radial-gradient(#d8d1c3 15%, transparent 16%);
+            background-size: 60px 60px;
+            background-position: 0 0, 30px 30px;
+            border: 12px solid #2b211c;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.8), inset 0 0 60px rgba(0,0,0,0.15);
+            padding: 25px;
+            min-height: 800px;
             position: relative;
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: auto auto;
-            gap: 20px;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 15px;
         }
 
-        .board-section {
-            background: rgba(255,255,255,0.5);
-            border: 1px dashed #b5a48b;
+        .board-header {
+            grid-column: span 12;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px dashed #b5a898;
+            padding-bottom: 10px;
+            margin-bottom: 5px;
+        }
+
+        .board-header h1 {
+            font-family: 'Permanent Marker', cursive;
+            font-size: 2rem;
+            color: #1b2631;
+            letter-spacing: 2px;
+        }
+
+        .section-blueprint {
+            grid-column: span 6;
+            background: rgba(28, 61, 90, 0.08);
+            border: 2px dashed #1c3d5a;
             padding: 15px;
             position: relative;
         }
 
-        .board-section h3 {
-            font-size: 1.1rem;
-            text-transform: uppercase;
-            border-bottom: 2px solid var(--text-dark);
-            margin-bottom: 10px;
-            padding-bottom: 3px;
-            letter-spacing: 1px;
-        }
-
-        /* Estilo Polaroid / Papel Fixado */
-        .polaroid {
-            background: var(--polaroid-bg);
-            padding: 10px 10px 25px 10px;
-            box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
-            transform: rotate(-1deg);
-            margin-bottom: 15px;
+        .section-todo {
+            grid-column: span 6;
+            background: rgba(243, 156, 18, 0.08);
+            border: 2px dashed #d35400;
+            padding: 15px;
             position: relative;
         }
 
-        .polaroid::before {
+        .section-access {
+            grid-column: span 8;
+            background: rgba(41, 128, 185, 0.05);
+            border: 2px dashed #2980b9;
+            padding: 15px;
+            position: relative;
+        }
+
+        .section-target {
+            grid-column: span 4;
+            background: rgba(39, 174, 96, 0.05);
+            border: 2px dashed #27ae60;
+            padding: 15px;
+            position: relative;
+        }
+
+        .section-tactics {
+            grid-column: span 12;
+            background: rgba(142, 68, 173, 0.05);
+            border: 2px dashed #8e44ad;
+            padding: 15px;
+            position: relative;
+        }
+
+        .section-title {
+            font-family: 'Permanent Marker', cursive;
+            font-size: 1.2rem;
+            color: #2c3e50;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+            text-align: center;
+            border-bottom: 2px solid #2c3e50;
+            display: inline-block;
+            width: 100%;
+            padding-bottom: 3px;
+        }
+
+        /* Polaroids */
+        .cards-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .polaroid {
+            background: #fff;
+            padding: 8px 8px 25px 8px;
+            box-shadow: 2px 3px 10px rgba(0,0,0,0.25);
+            width: 150px;
+            position: relative;
+            transform: rotate(-2deg);
+            transition: 0.2s;
+        }
+
+        .polaroid:nth-child(even) {
+            transform: rotate(2deg);
+        }
+
+        .polaroid:hover {
+            transform: scale(1.05) rotate(0deg);
+            z-index: 10;
+            box-shadow: 4px 6px 15px rgba(0,0,0,0.35);
+        }
+
+        .pin {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+            z-index: 5;
+        }
+        .pin.red { background: var(--pin-red); }
+        .pin.yellow { background: var(--pin-yellow); }
+        .pin.blue { background: var(--pin-blue); }
+
+        .polaroid img {
+            width: 100%;
+            height: 105px;
+            object-fit: cover;
+            border: 1px solid #ddd;
+        }
+
+        .polaroid-caption {
+            font-family: 'Special Elite', monospace;
+            font-size: 0.75rem;
+            text-align: center;
+            margin-top: 6px;
+            color: #333;
+            word-break: break-word;
+        }
+
+        .delete-card {
+            position: absolute;
+            top: 2px;
+            right: 4px;
+            background: rgba(192, 57, 43, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .polaroid:hover .delete-card {
+            display: flex;
+        }
+
+        .blueprint-paper {
+            background: #1c3d5a;
+            color: #d4f1f4;
+            padding: 15px;
+            border: 1px solid #3498db;
+            position: relative;
+            font-family: 'Courier New', monospace;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            min-height: 140px;
+        }
+        .blueprint-paper::before {
             content: '';
             position: absolute;
-            top: -10px;
+            top: -6px;
             left: 50%;
             transform: translateX(-50%);
             width: 12px;
             height: 12px;
-            background: var(--accent-red);
+            background: var(--pin-yellow);
             border-radius: 50%;
-            box-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
         }
 
-        /* Listas de Objetivos */
-        .objective-list {
+        .todo-list {
             list-style: none;
         }
 
-        .objective-item {
+        .todo-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: rgba(0,0,0,0.03);
-            padding: 6px 10px;
-            margin-bottom: 6px;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding: 4px 0;
+            border-bottom: 1px dashed rgba(0,0,0,0.1);
+            font-size: 0.9rem;
         }
 
-        .objective-item.completed span {
+        .todo-item.completed span {
             text-decoration: line-through;
             color: #7f8c8d;
         }
 
-        .objective-item input[type="checkbox"] {
-            cursor: pointer;
-            width: 18px;
-            height: 18px;
+        .add-item-box {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
         }
 
-        .delete-btn {
-            background: transparent;
-            color: var(--accent-red);
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
+        .add-item-box input {
+            background: #fff;
+            color: #111;
+            border: 1px solid #ccc;
+        }
+
+        .add-item-box button {
             width: auto;
-            padding: 0 5px;
-            font-size: 1rem;
+            background: #2c3e50;
+            color: white;
+            padding: 4px 10px;
+            font-size: 0.8rem;
         }
 
-        .delete-btn:hover {
-            color: #ff0000;
-            background: transparent;
+        .card-form-container {
+            background: rgba(0,0,0,0.04);
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 4px;
         }
-
-        .full-width {
-            grid-column: span 2;
-        }
-
-        .empty-state {
-            text-align: center;
-            font-style: italic;
-            color: #666;
-            padding: 20px;
+        .card-form-container h4 {
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            color: #2c3e50;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Painel de Planejamento de Golpes</h1>
-        <p>Organize seus alvos, missões preparatórias e o plano final.</p>
-    </header>
-
-    <div class="container">
-        <!-- MENU LATERAL -->
-        <div class="sidebar">
-            <h2>Seus Golpes</h2>
-            <ul id="heistList" class="heist-list">
-                <!-- Inserido via JS -->
-            </ul>
-
-            <div class="form-group">
-                <label for="newHeistName">Novo Golpe:</label>
-                <input type="text" id="newHeistName" placeholder="Ex: O Cassino Diamond">
-            </div>
-            <button onclick="createHeist()">Criar Golpe</button>
+    <div class="lamp-fixture">
+        <div class="lamp-mount">
+            <div class="lamp-arm"></div>
+            <div class="lamp-arm"></div>
         </div>
-
-        <!-- QUADRO DE CORTIÇA / TELA DE PLANEJAMENTO -->
-        <div class="board" id="boardContainer">
-            <div class="empty-state full-width">Selecione ou crie um golpe ao lado para começar o planejamento.</div>
+        <div class="lamp-bar">
+            <div class="lamp-light"></div>
         </div>
     </div>
 
+    <div class="main-layout">
+        <div class="sidebar">
+            <h2>Meus Planejamentos</h2>
+            <ul id="heistList" class="heist-list"></ul>
+
+            <div class="form-group">
+                <label>Criar Novo Golpe:</label>
+                <input type="text" id="newHeistName" placeholder="Ex: O Golpe do Cassino">
+            </div>
+            <button onclick="createHeist()">Criar Quadro</button>
+            <button onclick="deleteCurrentHeist()" style="background:#c0392b; color:white; margin-top:8px;">Excluir Este Golpe</button>
+        </div>
+
+        <div class="gta-board" id="boardContainer"></div>
+    </div>
+
     <script>
-        // Estrutura de dados inicial simulada no localStorage
-        let golpes = JSON.parse(localStorage.getItem('golpes_gta')) || [
+        let golpes = JSON.parse(localStorage.getItem('gta_golpes_v2')) || [
             {
                 id: 1,
-                nome: "O Assalto ao Banco Central",
-                alvo: "Cofre Principal - 40 Milhões",
-                objetivos: [
-                    { texto: "Roubar cartões de acesso da segurança", concluido: true },
-                    { texto: "Conseguir veículos de fuga customizados", concluido: false },
-                    { texto: "Adquirir brocas a laser avançadas", concluido: false }
+                nome: "O Golpe do Cassino Diamond",
+                blueprintText: "PLANTA BAIXA - TÉRREO & COFRE PRINCIPAL\n- Acessos laterais e tubulação de ar confirmados.\n- Sensores térmicos ativos na entrada principal.",
+                alvo: { titulo: "O Cofre do Cassino", img: "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=300" },
+                acessos: [
+                    { titulo: "Porta Principal", img: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=300" },
+                    { titulo: "Túnel de Esgoto", img: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=300" }
                 ],
-                planoFinal: "Entrar disfarçados de equipe de manutenção pela tubulação de ar, hackear os terminais silenciosamente e extrair pelos fundos com as motos."
+                seguranca: [
+                    { titulo: "Câmeras de Segurança", img: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=300" }
+                ],
+                tarefas: [
+                    { texto: "Averiguação do Cassino", concluido: true },
+                    { texto: "Conteúdo da Caixa-Forte", concluido: true },
+                    { texto: "Conseguir Veículos de Fuga", concluido: false }
+                ]
             }
         ];
 
         let golpeAtualId = golpes.length > 0 ? golpes[0].id : null;
 
         function salvarDados() {
-            localStorage.setItem('golpes_gta', JSON.stringify(golpes));
+            localStorage.setItem('gta_golpes_v2', JSON.stringify(golpes));
         }
 
         function renderSidebar() {
             const list = document.getElementById('heistList');
             list.innerHTML = '';
-            
             golpes.forEach(g => {
                 const li = document.createElement('li');
                 li.className = `heist-item ${g.id === golpeAtualId ? 'active' : ''}`;
@@ -310,17 +492,30 @@
             const nome = input.value.trim();
             if(!nome) return alert('Digite um nome para o golpe!');
 
-            const novoGolpe = {
+            const novo = {
                 id: Date.now(),
                 nome: nome,
-                alvo: "Definir Alvo...",
-                objetivos: [],
-                planoFinal: "Descrever o plano de execução final..."
+                blueprintText: "ANOTAÇÕES DO PLANO:\n- Escreva aqui os detalhes estratégicos...",
+                alvo: { titulo: "Alvo Principal", img: "https://images.unsplash.com/photo-1563089145-599997674d42?w=300" },
+                acessos: [],
+                seguranca: [],
+                tarefas: []
             };
 
-            golpes.push(novoGolpe);
-            golpeAtualId = novoGolpe.id;
+            golpes.push(novo);
+            golpeAtualId = novo.id;
             input.value = '';
+            salvarDados();
+            renderSidebar();
+            renderBoard();
+        }
+
+        function deleteCurrentHeist() {
+            if(golpes.length <= 1) return alert('Você precisa manter pelo menos um golpe!');
+            if(!confirm('Tem certeza que deseja apagar este planejamento?')) return;
+            
+            golpes = golpes.filter(g => g.id !== golpeAtualId);
+            golpeAtualId = golpes[0].id;
             salvarDados();
             renderSidebar();
             renderBoard();
@@ -328,100 +523,180 @@
 
         function renderBoard() {
             const container = document.getElementById('boardContainer');
-            const golpe = golpes.find(g => g.id === golpeAtualId);
+            const g = golpes.find(item => item.id === golpeAtualId);
 
-            if(!golpe) {
-                container.innerHTML = `<div class="empty-state full-width">Selecione ou crie um golpe ao lado para começar o planejamento.</div>`;
+            if(!g) {
+                container.innerHTML = `<div style="grid-column: span 12; text-align:center; padding: 50px;">Nenhum golpe selecionado.</div>`;
                 return;
             }
 
             container.innerHTML = `
-                <!-- SEÇÃO 1: ALVO -->
-                <div class="board-section">
-                    <h3>Alvo / Objetivo Principal</h3>
-                    <div class="polaroid" style="margin-top: 10px;">
-                        <input type="text" value="${golpe.alvo}" onchange="atualizarAlvo(this.value)" style="border:none; background:transparent; font-weight:bold; font-size:1.1rem; width:100%;">
-                        <small style="color:#666; display:block; margin-top:5px;">(Clique para editar o alvo)</small>
+                <div class="board-header">
+                    <h1>PLANEJAMENTO: ${g.nome.toUpperCase()}</h1>
+                    <span style="font-family: 'Special Elite'; font-size: 0.9rem; color: #555;">CLASSIFICADO // CONFIDENCIAL</span>
+                </div>
+
+                <div class="section-blueprint">
+                    <div class="section-title">PLANTA BAIXA / ESQUEMA</div>
+                    <div class="blueprint-paper">
+                        <textarea rows="5" onchange="updateBlueprint(this.value)" style="background:transparent; border:none; color:#d4f1f4; width:100%; font-family:inherit; resize:vertical;">${g.blueprintText}</textarea>
                     </div>
                 </div>
 
-                <!-- SEÇÃO 2: MISSÕES / A FAZER -->
-                <div class="board-section">
-                    <h3>Missões Preparatórias</h3>
-                    <ul class="objective-list" id="objectiveList">
-                        ${golpe.objetivos.map((obj, index) => `
-                            <li class="objective-item ${obj.concluido ? 'completed' : ''}">
-                                <label style="display: flex; align-items: center; gap: 10px; flex: 1; cursor: pointer;">
-                                    <input type="checkbox" ${obj.concluido ? 'checked' : ''} onclick="toggleObjetivo(${index})">
-                                    <span>${obj.texto}</span>
+                <div class="section-todo">
+                    <div class="section-title">A FAZER & PREPARATÓRIAS</div>
+                    <ul class="todo-list">
+                        ${g.tarefas.map((t, idx) => `
+                            <li class="todo-item ${t.concluido ? 'completed' : ''}">
+                                <label style="display:flex; align-items:center; gap:8px; cursor:pointer; flex:1;">
+                                    <input type="checkbox" ${t.concluido ? 'checked' : ''} onclick="toggleTarefa(${idx})">
+                                    <span>${t.texto}</span>
                                 </label>
-                                <button class="delete-btn" onclick="removerObjetivo(${index})">×</button>
+                                <button onclick="removerTarefa(${idx})" style="background:none; color:#c0392b; border:none; font-weight:bold; cursor:pointer; width:auto; padding:0 5px;">×</button>
                             </li>
                         `).join('')}
                     </ul>
-                    <div style="margin-top: 10px; display: flex; gap: 5px;">
-                        <input type="text" id="novoObjText" placeholder="Nova missão preparatória...">
-                        <button onclick="adicionarObjetivo()" style="width: auto;">Adicionar</button>
+                    <div class="add-item-box">
+                        <input type="text" id="novaTarefaText" placeholder="Nova missão preparatória...">
+                        <button onclick="adicionarTarefa()">Adicionar</button>
                     </div>
                 </div>
 
-                <!-- SEÇÃO 3: PLANO FINAL -->
-                <div class="board-section full-width">
-                    <h3>Plano Final de Execução</h3>
-                    <textarea rows="4" onchange="atualizarPlanoFinal(this.value)" placeholder="Descreva os passos da abordagem final...">${golpe.planoFinal}</textarea>
+                <div class="section-access">
+                    <div class="section-title">✦ ACESSOS & ROTAS ✦</div>
+                    <div class="cards-grid">
+                        ${g.acessos.map((acc, idx) => `
+                            <div class="polaroid">
+                                <div class="pin blue"></div>
+                                <img src="${acc.img}" alt="${acc.titulo}" onerror="this.src='https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=300'">
+                                <div class="polaroid-caption">${acc.titulo}</div>
+                                <button class="delete-card" onclick="removerCard('acessos', ${idx})">×</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="card-form-container">
+                        <h4>Adicionar Acesso / Rota (Foto e Título)</h4>
+                        <div style="display:flex; gap:5px; flex-wrap:wrap;">
+                            <input type="text" id="accTitulo" placeholder="Nome do Acesso (Ex: Porta Fundos)" style="flex:1; min-width:140px;">
+                            <input type="text" id="accImg" placeholder="URL da Imagem (Link da Web)" style="flex:1; min-width:140px;">
+                            <button onclick="adicionarCard('acessos')" style="width:auto;">Adicionar Foto</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-target">
+                    <div class="section-title">✦ ALVO ✦</div>
+                    <div class="cards-grid" style="justify-content:center;">
+                        <div class="polaroid" style="transform: rotate(0deg);">
+                            <div class="pin red"></div>
+                            <img src="${g.alvo.img}" alt="${g.alvo.titulo}" onerror="this.src='https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=300'">
+                            <div class="polaroid-caption">
+                                <input type="text" value="${g.alvo.titulo}" onchange="updateAlvoTitulo(this.value)" style="border:none; background:transparent; text-align:center; font-family:inherit; font-size:0.75rem; width:100%;">
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top:10px;">
+                        <input type="text" id="alvoImgUrl" placeholder="Alterar URL da foto do alvo..." onchange="updateAlvoImg(this.value)" style="font-size:0.8rem;">
+                    </div>
+                </div>
+
+                <div class="section-tactics">
+                    <div class="section-title">✦ SEGURANÇA & INTELIGÊNCIA ✦</div>
+                    <div class="cards-grid">
+                        ${g.seguranca.map((sec, idx) => `
+                            <div class="polaroid">
+                                <div class="pin yellow"></div>
+                                <img src="${sec.img}" alt="${sec.titulo}" onerror="this.src='https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=300'">
+                                <div class="polaroid-caption">${sec.titulo}</div>
+                                <button class="delete-card" onclick="removerCard('seguranca', ${idx})">×</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="card-form-container" style="margin-top:15px;">
+                        <h4>Adicionar Item de Segurança / Extra</h4>
+                        <div style="display:flex; gap:5px; flex-wrap:wrap;">
+                            <input type="text" id="secTitulo" placeholder="Nome (Ex: Hackear Câmeras)" style="flex:1; min-width:140px;">
+                            <input type="text" id="secImg" placeholder="URL da Imagem (Link da Web)" style="flex:1; min-width:140px;">
+                            <button onclick="adicionarCard('seguranca')" style="width:auto;">Adicionar Foto</button>
+                        </div>
+                    </div>
                 </div>
             `;
         }
 
-        function atualizarAlvo(valor) {
-            const golpe = golpes.find(g => g.id === golpeAtualId);
-            if(golpe) {
-                golpe.alvo = valor;
-                salvarDados();
-            }
+        function updateBlueprint(val) {
+            const g = golpes.find(item => item.id === golpeAtualId);
+            if(g) { g.blueprintText = val; salvarDados(); }
         }
 
-        function atualizarPlanoFinal(valor) {
-            const golpe = golpes.find(g => g.id === golpeAtualId);
-            if(golpe) {
-                golpe.planoFinal = valor;
-                salvarDados();
-            }
+        function updateAlvoTitulo(val) {
+            const g = golpes.find(item => item.id === golpeAtualId);
+            if(g) { g.alvo.titulo = val; salvarDados(); }
         }
 
-        function adicionarObjetivo() {
-            const input = document.getElementById('novoObjText');
+        function updateAlvoImg(val) {
+            if(!val.trim()) return;
+            const g = golpes.find(item => item.id === golpeAtualId);
+            if(g) { g.alvo.img = val.trim(); salvarDados(); renderBoard(); }
+        }
+
+        function adicionarTarefa() {
+            const input = document.getElementById('novaTarefaText');
             const texto = input.value.trim();
             if(!texto) return;
-
-            const golpe = golpes.find(g => g.id === golpeAtualId);
-            if(golpe) {
-                golpe.objetivos.push({ texto: texto, concluido: false });
+            const g = golpes.find(item => item.id === golpeAtualId);
+            if(g) {
+                g.tarefas.push({ texto: texto, concluido: false });
                 input.value = '';
                 salvarDados();
                 renderBoard();
             }
         }
 
-        function toggleObjetivo(index) {
-            const golpe = golpes.find(g => g.id === golpeAtualId);
-            if(golpe && golpe.objetivos[index]) {
-                golpe.objetivos[index].concluido = !golpe.objetivos[index].concluido;
+        function toggleTarefa(idx) {
+            const g = golpes.find(item => item.id === golpeAtualId);
+            if(g && g.tarefas[idx]) {
+                g.tarefas[idx].concluido = !g.tarefas[idx].concluido;
                 salvarDados();
                 renderBoard();
             }
         }
 
-        function removerObjetivo(index) {
-            const golpe = golpes.find(g => g.id === golpeAtualId);
-            if(golpe) {
-                golpe.objetivos.splice(index, 1);
+        function removerTarefa(idx) {
+            const g = golpes.find(item => item.id === golpeAtualId);
+            if(g) {
+                g.tarefas.splice(idx, 1);
                 salvarDados();
                 renderBoard();
             }
         }
 
-        // Inicialização do carregamento da página
+        function adicionarCard(tipo) {
+            const tituloInput = document.getElementById(tipo === 'acessos' ? 'accTitulo' : 'secTitulo');
+            const imgInput = document.getElementById(tipo === 'acessos' ? 'accImg' : 'secImg');
+            
+            const titulo = tituloInput.value.trim();
+            const img = imgInput.value.trim() || 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=300';
+
+            if(!titulo) return alert('Digite um título para o card!');
+
+            const g = golpes.find(item => item.id === golpeAtualId);
+            if(g) {
+                g[tipo].push({ titulo, img });
+                salvarDados();
+                renderBoard();
+            }
+        }
+
+        function removerCard(tipo, idx) {
+            const g = golpes.find(item => item.id === golpeAtualId);
+            if(g) {
+                g[tipo].splice(idx, 1);
+                salvarDados();
+                renderBoard();
+            }
+        }
+
         renderSidebar();
         renderBoard();
     </script>
