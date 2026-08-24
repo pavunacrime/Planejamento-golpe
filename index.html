@@ -12,6 +12,7 @@
             --text-color: #2b2b2b;
             --accent-red: #c0392b;
             --accent-green: #27ae60;
+            --accent-blue: #2980b9;
         }
 
         * {
@@ -114,11 +115,6 @@
             padding-bottom: 15px;
         }
 
-        .board-header h1 {
-            font-size: 1.8rem;
-            color: #fff;
-        }
-
         .board-header input {
             background: transparent;
             border: none;
@@ -161,7 +157,7 @@
             z-index: 10;
         }
 
-        /* Tachinha */
+        /* Tachinhas */
         .pin {
             width: 16px;
             height: 16px;
@@ -180,12 +176,15 @@
             text-transform: uppercase;
             border-bottom: 1px solid #ccc;
             padding-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        /* Alvo Principal - Imagem Inteira */
+        /* Container de Imagens Inteiras */
         .target-img-container {
             width: 100%;
-            max-height: 250px;
+            max-height: 220px;
             background: #222;
             border: 2px dashed #bbb;
             display: flex;
@@ -199,8 +198,8 @@
         .target-img-container img {
             width: 100%;
             height: auto;
-            max-height: 240px;
-            object-fit: contain; /* Mantém a imagem inteira sem cortar */
+            max-height: 210px;
+            object-fit: contain;
             display: block;
         }
 
@@ -219,7 +218,7 @@
             padding: 20px;
         }
 
-        /* Marcações Verdes abaixo da imagem */
+        /* Marcações Verdes */
         .target-checks {
             margin-top: 10px;
             display: flex;
@@ -301,6 +300,15 @@
             font-family: inherit;
             background: rgba(255,255,255,0.5);
         }
+
+        .delete-card-btn {
+            background: transparent;
+            border: none;
+            color: #c0392b;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
     </style>
 </head>
 <body>
@@ -320,25 +328,23 @@
             <button class="btn" id="deleteHeistBtn" style="background: #c0392b; color: white; padding: 6px 12px; font-size: 0.8rem;">Excluir Golpe</button>
         </div>
 
-        <div class="board-grid">
+        <div class="board-grid" id="boardGrid">
             <!-- ALVO PRINCIPAL -->
             <div class="card">
                 <div class="pin"></div>
                 <h3>Alvo Principal</h3>
                 <div class="target-img-container" id="targetImgContainer">
-                    <span class="target-upload-text">Clique para enviar a foto inteira</span>
+                    <span class="target-upload-text">Clique para enviar foto inteira</span>
                     <input type="file" id="targetImageInput" accept="image/*">
                 </div>
                 <input type="text" id="targetName" placeholder="Nome / Descrição do Alvo" style="width:100%; padding:6px; font-family:inherit; border:1px solid #ccc; margin-bottom: 10px;">
-                
-                <!-- Opções de Marcação Verde -->
-                <div class="target-checks" id="targetChecksContainer">
-                    <label class="target-check-item">
-                        <input type="checkbox" id="checkOpt1" onchange="updateTargetCheck(0)">
-                        <span>Opção / Alvo Selecionado</span>
+                <div class="target-checks">
+                    <label class="target-check-item" id="lblTarget1">
+                        <input type="checkbox" id="checkTarget1" onchange="updateMainTargetCheck(0)">
+                        <span>Alvo Confirmado</span>
                     </label>
-                    <label class="target-check-item">
-                        <input type="checkbox" id="checkOpt2" onchange="updateTargetCheck(1)">
+                    <label class="target-check-item" id="lblTarget2">
+                        <input type="checkbox" id="checkTarget2" onchange="updateMainTargetCheck(1)">
                         <span>Prioridade Máxima</span>
                     </label>
                 </div>
@@ -346,7 +352,7 @@
 
             <!-- MISSÕES PREPARATÓRIAS -->
             <div class="card">
-                <div class="pin" style="background: #2980b9;"></div>
+                <div class="pin" style="background: var(--accent-blue);"></div>
                 <h3>Missões Preparatórias</h3>
                 <ul class="checklist" id="prepList"></ul>
                 <div class="input-row">
@@ -362,11 +368,26 @@
                 <textarea class="notes" id="boardNotes" placeholder="Escreva detalhes e rotas..."></textarea>
             </div>
         </div>
+
+        <!-- Botões para adicionar novos blocos de Acessos ou Segurança -->
+        <div style="margin-top: 30px; display: flex; gap: 15px;">
+            <button class="btn" onclick="addDynamicCard('access')" style="background: #2980b9; color: #fff;">+ Adicionar Acesso</button>
+            <button class="btn" onclick="addDynamicCard('security')" style="background: #8e44ad; color: #fff;">+ Adicionar Segurança</button>
+        </div>
     </main>
 
     <script>
         let heists = JSON.parse(localStorage.getItem('heists')) || [
-            { id: 1, title: 'Golpe do Cassino', targetName: 'Cofre Principal', targetImage: '', targetChecks: [false, false], preps: [{text: 'Conseguir disfarces', done: false}], notes: '' }
+            { 
+                id: 1, 
+                title: 'Golpe do CC', 
+                targetName: 'Cofre Principal', 
+                targetImage: '', 
+                targetChecks: [false, false], 
+                preps: [{text: 'Conseguir disfarces', done: false}], 
+                notes: '',
+                dynamicCards: []
+            }
         ];
         let currentHeistId = heists[0].id;
 
@@ -377,13 +398,14 @@
         
         const targetImgContainer = document.getElementById('targetImgContainer');
         const targetNameEl = document.getElementById('targetName');
-        const checkOpt1 = document.getElementById('checkOpt1');
-        const checkOpt2 = document.getElementById('checkOpt2');
+        const checkTarget1 = document.getElementById('checkTarget1');
+        const checkTarget2 = document.getElementById('checkTarget2');
 
         const prepListEl = document.getElementById('prepList');
         const newPrepInput = document.getElementById('newPrepInput');
         const addPrepBtn = document.getElementById('addPrepBtn');
         const boardNotesEl = document.getElementById('boardNotes');
+        const boardGridEl = document.getElementById('boardGrid');
 
         function saveAndRender() {
             localStorage.setItem('heists', JSON.stringify(heists));
@@ -419,22 +441,20 @@
             boardNotesEl.value = h.notes || '';
 
             if (!h.targetChecks) h.targetChecks = [false, false];
-            checkOpt1.checked = h.targetChecks[0];
-            checkOpt2.checked = h.targetChecks[1];
-            
-            // Atualizar classes visuais das marcações verdes
-            checkOpt1.parentElement.className = `target-check-item ${h.targetChecks[0] ? 'checked' : ''}`;
-            checkOpt2.parentElement.className = `target-check-item ${h.targetChecks[1] ? 'checked' : ''}`;
+            checkTarget1.checked = h.targetChecks[0];
+            checkTarget2.checked = h.targetChecks[1];
+            document.getElementById('lblTarget1').className = `target-check-item ${h.targetChecks[0] ? 'checked' : ''}`;
+            document.getElementById('lblTarget2').className = `target-check-item ${h.targetChecks[1] ? 'checked' : ''}`;
 
-            // Renderizar Imagem Inteira
+            // Alvo Principal Imagem
             if (h.targetImage) {
                 targetImgContainer.innerHTML = `<img src="${h.targetImage}" alt="Alvo"><input type="file" id="targetImageInput" accept="image/*">`;
             } else {
-                targetImgContainer.innerHTML = `<span class="target-upload-text">Clique para enviar a foto inteira</span><input type="file" id="targetImageInput" accept="image/*">`;
+                targetImgContainer.innerHTML = `<span class="target-upload-text">Clique para enviar foto inteira</span><input type="file" id="targetImageInput" accept="image/*">`;
             }
-            bindImageUpload();
+            bindMainImageUpload();
 
-            // Renderizar Missões
+            // Missões
             prepListEl.innerHTML = '';
             (h.preps || []).forEach((p, index) => {
                 const li = document.createElement('li');
@@ -445,18 +465,20 @@
                 `;
                 prepListEl.appendChild(li);
             });
+
+            // Renderizar Cards Dinâmicos (Acessos e Segurança extras)
+            renderDynamicCards();
         }
 
-        function bindImageUpload() {
+        function bindMainImageUpload() {
             const input = document.getElementById('targetImageInput');
             if(input) {
                 input.onchange = (e) => {
                     const file = e.target.files[0];
                     if (file) {
                         const reader = new FileReader();
-                        reader.onload = function(uploadEvent) {
-                            const h = getCurrentHeist();
-                            h.targetImage = uploadEvent.target.result;
+                        reader.onload = function(ev) {
+                            getCurrentHeist().targetImage = ev.target.result;
                             saveAndRender();
                         };
                         reader.readAsDataURL(file);
@@ -465,13 +487,116 @@
             }
         }
 
-        window.updateTargetCheck = (index) => {
+        window.updateMainTargetCheck = (index) => {
             const h = getCurrentHeist();
             if (!h.targetChecks) h.targetChecks = [false, false];
-            if(index === 0) h.targetChecks[0] = checkOpt1.checked;
-            if(index === 1) h.targetChecks[1] = checkOpt2.checked;
+            h.targetChecks[index] = index === 0 ? checkTarget1.checked : checkTarget2.checked;
             localStorage.setItem('heists', JSON.stringify(heists));
             renderActiveHeist();
+        };
+
+        // Funções para cards dinâmicos (Acessos / Segurança)
+        window.addDynamicCard = (type) => {
+            const h = getCurrentHeist();
+            if (!h.dynamicCards) h.dynamicCards = [];
+            h.dynamicCards.push({
+                id: Date.now(),
+                type: type,
+                title: type === 'access' ? 'Novo Ponto de Acesso' : 'Segurança / Câmera',
+                image: '',
+                checks: [false, false]
+            });
+            saveAndRender();
+        };
+
+        window.removeDynamicCard = (cardId) => {
+            const h = getCurrentHeist();
+            h.dynamicCards = h.dynamicCards.filter(c => c.id !== cardId);
+            saveAndRender();
+        };
+
+        window.updateDynamicCardTitle = (cardId, val) => {
+            const h = getCurrentHeist();
+            const card = h.dynamicCards.find(c => c.id === cardId);
+            if (card) {
+                card.title = val;
+                localStorage.setItem('heists', JSON.stringify(heists));
+            }
+        };
+
+        window.updateDynamicCardCheck = (cardId, checkIndex) => {
+            const h = getCurrentHeist();
+            const card = h.dynamicCards.find(c => c.id === cardId);
+            if (card) {
+                if (!card.checks) card.checks = [false, false];
+                card.checks[checkIndex] = !card.checks[checkIndex];
+                localStorage.setItem('heists', JSON.stringify(heists));
+                renderActiveHeist();
+            }
+        };
+
+        function renderDynamicCards() {
+            // Remove antigos cards dinâmicos do DOM para recriar limpos
+            const existingDynamic = boardGridEl.querySelectorAll('.dynamic-card');
+            existingDynamic.forEach(el => el.remove());
+
+            const h = getCurrentHeist();
+            if (!h.dynamicCards) return;
+
+            h.dynamicCards.forEach(card => {
+                const cardEl = document.createElement('div');
+                cardEl.className = 'card dynamic-card';
+                const pinColor = card.type === 'access' ? '#27ae60' : '#8e44ad';
+                const label1Text = card.type === 'access' ? 'Acesso Liberado' : 'Rota Monitorada';
+                const label2Text = card.type === 'access' ? 'Rota Segura' : 'Alerta Ativo';
+
+                cardEl.innerHTML = `
+                    <div class="pin" style="background: ${pinColor};"></div>
+                    <h3>
+                        <span>${card.type === 'access' ? 'Acesso' : 'Segurança'}</span>
+                        <button class="delete-card-btn" onclick="removeDynamicCard(${card.id})">X Excluir</button>
+                    </h3>
+                    <div class="target-img-container" id="dynImg-${card.id}">
+                        <span class="target-upload-text">Clique para enviar imagem</span>
+                        <input type="file" accept="image/*" onchange="uploadDynamicImage(event, ${card.id})">
+                    </div>
+                    <input type="text" value="${card.title}" oninput="updateDynamicCardTitle(${card.id}, this.value)" placeholder="Título..." style="width:100%; padding:6px; font-family:inherit; border:1px solid #ccc; margin-bottom: 10px;">
+                    <div class="target-checks">
+                        <label class="target-check-item ${card.checks && card.checks[0] ? 'checked' : ''}">
+                            <input type="checkbox" ${card.checks && card.checks[0] ? 'checked' : ''} onchange="updateDynamicCardCheck(${card.id}, 0)">
+                            <span>${label1Text}</span>
+                        </label>
+                        <label class="target-check-item ${card.checks && card.checks[1] ? 'checked' : ''}">
+                            <input type="checkbox" ${card.checks && card.checks[1] ? 'checked' : ''} onchange="updateDynamicCardCheck(${card.id}, 1)">
+                            <span>${label2Text}</span>
+                        </label>
+                    </div>
+                `;
+
+                // Inserir imagem se houver
+                const imgContainer = cardEl.querySelector(`#dynImg-${card.id}`);
+                if (card.image) {
+                    imgContainer.innerHTML = `<img src="${card.image}" alt="Card Image"><input type="file" accept="image/*" onchange="uploadDynamicImage(event, ${card.id})">`;
+                }
+
+                boardGridEl.appendChild(cardEl);
+            });
+        }
+
+        window.uploadDynamicImage = (e, cardId) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    const h = getCurrentHeist();
+                    const card = h.dynamicCards.find(c => c.id === cardId);
+                    if (card) {
+                        card.image = ev.target.result;
+                        saveAndRender();
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
         };
 
         heistTitleEl.oninput = (e) => {
@@ -507,7 +632,7 @@
 
         newHeistBtn.onclick = () => {
             const newId = Date.now();
-            heists.push({ id: newId, title: 'Novo Golpe', targetName: '', targetImage: '', targetChecks: [false, false], preps: [], notes: '' });
+            heists.push({ id: newId, title: 'Novo Golpe', targetName: '', targetImage: '', targetChecks: [false, false], preps: [], notes: '', dynamicCards: [] });
             currentHeistId = newId;
             saveAndRender();
         };
