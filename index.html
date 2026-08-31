@@ -3,52 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Gastos</title>
+    <title>Controle de Gastos Avançado</title>
+    <!-- Biblioteca PDF.js para ler arquivos PDF direto no navegador -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .container { width: 100%; max-width: 400px; background: #1e293b; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-        h1 { text-align: center; color: #60a5fa; font-size: 20px; }
-        input, button { width: 100%; padding: 10px; margin: 8px 0; border: none; border-radius: 4px; box-sizing: border-box; }
-        input { background: #334155; color: #fff; }
-        button { background: #3b82f6; color: #white; font-weight: bold; cursor: pointer; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 500px; background: #1e293b; padding: 20px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.4); }
+        h1, h2 { text-align: center; color: #60a5fa; }
+        .card { background: #334155; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+        label { display: block; margin-top: 8px; font-size: 13px; color: #94a3b8; }
+        input, select, button { width: 100%; padding: 10px; margin-top: 4px; margin-bottom: 8px; border: none; border-radius: 6px; box-sizing: border-box; }
+        input, select { background: #1e293b; color: #fff; border: 1px solid #475569; }
+        button { background: #3b82f6; color: #fff; font-weight: bold; cursor: pointer; transition: background 0.2s; }
         button:hover { background: #2563eb; }
-        ul { list-style: none; padding: 0; }
-        li { background: #334155; margin-top: 5px; padding: 8px; border-radius: 4px; display: flex; justify-content: space-between; }
+        .btn-pdf { background: #8b5cf6; }
+        .btn-pdf:hover { background: #7c3aed; }
+        ul { list-style: none; padding: 0; max-height: 200px; overflow-y: auto; }
+        li { background: #334155; margin-top: 6px; padding: 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #3b82f6; }
+        .info-gasto { font-size: 14px; }
+        .data-gasto { font-size: 11px; color: #94a3b8; }
+        .total-box { font-size: 18px; font-weight: bold; text-align: center; margin-top: 15px; color: #34d399; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Meu Controle de Gastos</h1>
-        <input type="text" id="descricao" placeholder="Descrição do Gasto">
-        <input type="number" id="valor" placeholder="Valor (R$)">
-        <button onclick="adicionarGasto()">Adicionar Gasto</button>
-        
-        <h3>Histórico:</h3>
+        <h1>Controle de Gastos</h1>
+
+        <!-- Seção de Importação de PDF -->
+        <div class="card" style="border-left: 4px solid #8b5cf6;">
+            <label><strong>Importar Extrato/Fatura em PDF:</strong></label>
+            <input type="file" id="pdfFile" accept=".pdf">
+            <button class="btn-pdf" onclick="lerPDF()">Ler e Extrair do PDF</button>
+            <small style="color: #94a3b8; font-size: 11px;">O sistema tentará identificar datas e valores automaticamente.</small>
+        </div>
+
+        <!-- Formulário Manual -->
+        <div class="card">
+            <label>Descrição do Gasto:</label>
+            <input type="text" id="descricao" placeholder="Ex: Supermercado, Aluguel...">
+            
+            <label>Valor (R$):</label>
+            <input type="number" id="valor" step="0.01" placeholder="0.00">
+
+            <label>Data:</label>
+            <input type="date" id="data">
+
+            <button onclick="adicionarGastoManual()">Adicionar Gasto</button>
+        </div>
+
+        <!-- Filtro por Mês -->
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <label style="margin:0; white-space:nowrap;">Filtrar Mês:</label>
+            <select id="filtroMes" onchange="atualizarLista()">
+                <option value="todos">Todos os Meses</option>
+                <option value="01">Janeiro</option>
+                <option value="02">Fevereiro</option>
+                <option value="03">Março</option>
+                <option value="04">Abril</option>
+                <option value="05">Maio</option>
+                <option value="06">Junho</option>
+                <option value="07">Julho</option>
+                <option value="08">Agosto</option>
+                <option value="09">Setembro</option>
+                <option value="10">Outubro</option>
+                <option value="11">Novembro</option>
+                <option value="12">Dezembro</option>
+            </select>
+        </div>
+
+        <h3>Histórico de Gastos:</h3>
         <ul id="lista"></ul>
-        <h3 id="total">Total: R$ 0,00</h3>
+        <div class="total-box" id="total">Total: R$ 0,00</div>
     </div>
 
     <script>
-        let totalGeral = 0;
-        function adicionarGasto() {
-            let desc = document.getElementById('descricao').value;
-            let val = parseFloat(document.getElementById('valor').value);
+        // Configurar o PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        // Carrega dados salvos no navegador (LocalStorage) ou array vazio
+        let gastos = JSON.parse(localStorage.getItem('gastos_cs')) || [];
+
+        // Preenche a data de hoje por padrão no input
+        document.getElementById('data').valueAsDate = new Date();
+
+        atualizarLista();
+
+        function adicionarGasto(desc, val, dataStr) {
+            if (!desc || isNaN(val) || !dataStr) return;
             
-            if(!desc || isNaN(val)) {
-                alert('Preencha todos os campos corretamente!');
+            gastos.push({
+                descricao: desc,
+                valor: parseFloat(val),
+                data: dataStr // formato "AAAA-MM-DD"
+            });
+
+            salvarEEstar();
+        }
+
+        function adicionarGastoManual() {
+            let desc = document.getElementById('descricao').value;
+            let val = document.getElementById('valor').value;
+            let dataStr = document.getElementById('data').value;
+
+            if (!desc || !val || !dataStr) {
+                alert('Preencha todos os campos!');
                 return;
             }
 
-            let lista = document.getElementById('lista');
-            let item = document.createElement('li');
-            item.innerHTML = `<span>${desc}</span> <span>R$ ${val.toFixed(2)}</span>`;
-            lista.appendChild(item);
-
-            totalGeral += val;
-            document.getElementById('total').innerText = `Total: R$ ${totalGeral.toFixed(2)}`;
+            adicionarGasto(desc, val, dataStr);
 
             document.getElementById('descricao').value = '';
             document.getElementById('valor').value = '';
+        }
+
+        function salvarEEstar() {
+            localStorage.setItem('gastos_cs', JSON.stringify(gastos));
+            atualizarLista();
+        }
+
+        function atualizarLista() {
+            let lista = document.getElementById('lista');
+            let filtro = document.getElementById('filtroMes').value;
+            lista.innerHTML = '';
+
+            let totalGeral = 0;
+
+            gastos.forEach((gasto, index) => {
+                let partesData = gasto.data.split('-'); // [Ano, Mes, Dia]
+                let mesGasto = partesData[1];
+
+                if (filtro === 'todos' || mesGasto === filtro) {
+                    totalGeral += gasto.valor;
+
+                    let item = document.createElement('li');
+                    item.innerHTML = `
+                        <div>
+                            <div class="info-gasto"><strong>${gasto.descricao}</strong></div>
+                            <div class="data-gasto">Data: ${gasto.data.split('-').reverse().join('/')}</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="color: #f87171; font-weight: bold;">R$ ${gasto.valor.toFixed(2)}</span>
+                            <button onclick="removerGasto(${index})" style="background: #ef4444; width: auto; padding: 4px 8px; margin:0; font-size:11px;">X</button>
+                        </div>
+                    `;
+                    lista.appendChild(item);
+                }
+            });
+
+            document.getElementById('total').innerText = `Total: R$ ${totalGeral.toFixed(2)}`;
+        }
+
+        function removerGasto(index) {
+            gastos.splice(index, 1);
+            salvarEEstar();
+        }
+
+        // Função mágica para ler o PDF e extrair textos
+        async function lerPDF() {
+            let fileInput = document.getElementById('pdfFile');
+            if (fileInput.files.length === 0) {
+                alert('Selecione um arquivo PDF primeiro!');
+                return;
+            }
+
+            let file = fileInput.files[0];
+            let reader = new FileReader();
+
+            reader.onload = async function() {
+                let typedarray = new Uint8Array(this.result);
+                try {
+                    let pdf = await pdfjsLib.getDocument(typedarray).promise;
+                    let textoCompleto = '';
+
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        let page = await pdf.getPage(i);
+                        let textContent = await page.getTextContent();
+                        let pageText = textContent.items.map(item => item.str).join(' ');
+                        textoCompleto += pageText + '\n';
+                    }
+
+                    processarTextoExtrato(textoCompleto);
+                } catch (error) {
+                    alert('Erro ao ler o PDF. Certifique-se de que é um PDF válido.');
+                    console.error(error);
+                }
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+
+        // Lógica simples para extrair valores monetários e descrições aproximadas do texto do PDF
+        function processarTextoExtrato(texto) {
+            // Regex para encontrar valores em formato R$ XX,XX ou valores com ponto/vírgula em faturas
+            let regexValores = /(?:R\$\s*)?(\d{1,3}(?:\.\d{3})*,\d{2})/g;
+            let matches = [...texto.matchAll(regexValores)];
+
+            let encontrados = 0;
+            let dataHoje = new Date().toISOString().split('T')[0];
+
+            matches.forEach(match => {
+                let valorStr = match[1].replace(/\./g, '').replace(',', '.');
+                let valorNum = parseFloat(valorStr);
+
+                if (valorNum > 0 && valorNum < 50000) { // Filtro básico de segurança para valores absurdos
+                    // Pega um trecho de texto próximo ao valor para usar como descrição
+                    let indiceMatch = match.index;
+                    let trechoInicio = Math.max(0, indiceMatch - 40);
+                    let descricaoExtraida = texto.substring(trechoInicio, indiceMatch).trim();
+                    
+                    // Limpa caracteres estranhos da descrição
+                    descricaoExtraida = descricaoExtraida.replace(/[^a-zA-ZÀ-ÿ0-9\s]/g, '').trim();
+                    if (descricaoExtraida.length < 3) descricaoExtraida = "Gasto Importado PDF";
+
+                    gastos.push({
+                        descricao: descricaoExtraida,
+                        valor: valorNum,
+                        data: dataHoje
+                    });
+                    encontrados++;
+                }
+            });
+
+            if (encontrados > 0) {
+                salvarEEstar();
+                alert(`Sucesso! Foram importados ${encontrados} lançamentos aproximados do PDF. Revise a lista e ajuste se necessário.`);
+            } else {
+                alert('Não foi possível identificar valores automáticos claros neste PDF. Você pode cadastrar manualmente ou o formato do banco é muito fechado.');
+            }
         }
     </script>
 </body>
