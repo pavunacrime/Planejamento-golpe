@@ -3,254 +3,344 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quadro de Planejamento - Estilo GTA V</title>
+    <title>Quadro de Planejamento - Heist Board</title>
     <style>
+        :root {
+            --board-bg: #f4f5f7;
+            --border-color: #d1d5db;
+            --text-main: #2b2b2b;
+            --blueprint-bg: #1e3a8a;
+        }
+
         body {
-            background-color: #ffffff; /* Fundo Branco */
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #333;
             margin: 0;
             padding: 20px;
-        }
-
-        .container {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr; /* 3 Colunas principais */
-            gap: 20px;
-            max-width: 1400px;
-            margin: 0 auto;
-            border: 2px solid #ccc;
-            padding: 20px;
-            background-color: #f9f9f9;
-            position: relative;
-        }
-
-        /* Estilo das Colunas */
-        .coluna {
-            background: #fff;
-            border: 1px solid #ddd;
-            padding: 15px;
-            border-radius: 5px;
-            min-height: 400px;
-        }
-
-        h2 {
-            border-bottom: 3px solid #ffcc00; /* Amarelo estilo GTA */
-            padding-bottom: 10px;
-            margin-top: 0;
-            font-size: 1.2rem;
-            text-transform: uppercase;
-        }
-
-        /* Áreas para arrastar imagens */
-        .drop-zone {
-            min-height: 150px;
-            border: 2px dashed #aaa;
-            margin-bottom: 15px;
-            padding: 10px;
+            background-color: #e5e7eb;
+            font-family: 'Courier New', Courier, monospace; /* Estilo rústico de anotação */
+            color: var(--text-main);
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: flex-start;
-            background-color: #fff;
+            justify-content: center;
         }
 
-        .drop-zone.active {
-            border-color: #ffcc00;
-            background-color: #fffef5;
-        }
-
-        /* Itens arrastáveis (Fotos) */
-        .item {
-            width: 120px;
-            height: 90px;
-            background-size: cover;
-            background-position: center;
-            border: 3px solid #333;
-            cursor: grab;
+        /* O Quadro Branco */
+        .board {
+            width: 1300px;
+            background-color: var(--board-bg);
+            border: 10px solid #d1d5db;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            padding: 30px;
             position: relative;
-            background-color: #e0e0e0;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-        }
-
-        .item:active {
-            cursor: grabbing;
-            border-color: #ffcc00;
-        }
-
-        .item.dragging {
-            opacity: 0.5;
-        }
-
-        /* Caixa de Texto editável */
-        .texto-objetivo {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            padding: 4px;
-            border: none;
-            border-top: 2px solid #333;
-            font-size: 12px;
-            font-weight: bold;
-            text-align: center;
-            background: rgba(255, 255, 255, 0.9);
             box-sizing: border-box;
-            color: #000;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 20px 20px;
         }
 
-        .texto-objetivo:focus {
-            outline: 2px solid #ffcc00;
+        h2.section-title {
+            text-align: center;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            border-bottom: 2px dashed #9ca3af;
+            padding-bottom: 5px;
+            margin: 20px 0 15px 0;
+            color: #4b5563;
+        }
+
+        /* Grid Superior */
+        .top-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* Blueprint (Planta) */
+        .blueprint-box {
+            background-color: var(--blueprint-bg);
+            border: 4px solid #3b82f6;
+            padding: 15px;
+            color: white;
+            position: relative;
+            min-height: 180px;
+            box-shadow: 3px 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .pin {
+            width: 12px;
+            height: 12px;
+            background-color: #dc2626;
+            border-radius: 50%;
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        /* Listas de Tarefas (To-Do / Optional) */
+        .todo-box, .optional-box {
             background: #fff;
+            padding: 10px 15px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+            font-size: 0.85rem;
+            position: relative;
         }
 
-        /* Botão de Upload */
-        .btn-upload {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #ffcc00;
-            color: #000;
-            border: 3px solid #000;
-            padding: 15px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            text-transform: uppercase;
-            cursor: pointer;
-            box-shadow: 3px 3px 0px #888;
-            transition: transform 0.1s;
-            z-index: 1000;
+        .todo-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            gap: 8px;
         }
 
-        .btn-upload:hover {
-            transform: translate(-2px, -2px);
-            box-shadow: 5px 5px 0px #000;
+        /* Seção do Meio - Acessos, Alvos e Extras */
+        .middle-section {
+            display: grid;
+            grid-template-columns: 3fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
         }
 
-        .btn-upload:active {
-            transform: translate(2px, 2px);
-            box-shadow: 1px 1px 0px #000;
+        .access-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        /* Cartão de Foto Estilo Polaroid/Evidência */
+        .evidence-card {
+            background: #fff;
+            padding: 8px 8px 25px 8px;
+            box-shadow: 1px 3px 8px rgba(0,0,0,0.15);
+            text-align: center;
+            position: relative;
+            cursor: grab;
+            transition: transform 0.2s;
+        }
+
+        .evidence-card:active {
+            cursor: grabbing;
+        }
+
+        .evidence-card img {
+            width: 100%;
+            height: 90px;
+            object-fit: cover;
+            border: 1px solid #ccc;
+        }
+
+        .evidence-card input[type="text"] {
+            border: none;
+            background: transparent;
+            text-align: center;
+            font-family: inherit;
+            font-size: 0.8rem;
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        .evidence-card input[type="file"] {
+            display: none;
+        }
+
+        /* Seção Inferior - Abordagens */
+        .approach-section {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .approach-card {
+            background: #fff;
+            padding: 10px;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            position: relative;
+        }
+
+        .approach-card img {
+            width: 100%;
+            height: 110px;
+            object-fit: cover;
+            border: 1px solid #ccc;
+        }
+
+        /* Instrução flutuante de ajuda */
+        .help-tip {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 15px;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-
-        <!-- Coluna 1: Acesso / Fotos -->
-        <div class="coluna">
-            <h2>1. Pontos de Acesso</h2>
-            <div class="drop-zone" id="area-acesso">
-                <!-- Exemplo de item pré-criado (pode apagar se quiser) -->
-                <div class="item" draggable="true" style="background-image: url('https://via.placeholder.com/120x90?text=Porta')">
-                    <input type="text" class="texto-objetivo" value="Porta Principal">
-                </div>
-            </div>
-            <p><small>Arraste as fotos para reorganizar ou mover entre colunas.</small></p>
+<div class="board">
+    <div class="top-section">
+        <div class="blueprint-box">
+            <div class="pin"></div>
+            <h3 contenteditable="true" style="margin-top:0; font-size:0.9rem;">PLANTA BAIXA / BLUEPRINT</h3>
+            <p contenteditable="true" style="font-size: 0.75rem; opacity: 0.8;">Clique aqui para adicionar detalhes da planta do local...</p>
         </div>
 
-        <!-- Coluna 2: O Alvo -->
-        <div class="coluna" style="text-align: center;">
-            <h2>2. Alvo Principal</h2>
-            <div class="drop-zone" style="height: 250px; justify-content: center; align-items: center; flex-direction: column;">
-                <div class="item" draggable="true" style="width: 180px; height: 130px; background-image: url('https://via.placeholder.com/180x130?text=CAIXA')">
-                    <input type="text" class="texto-objetivo" value="CAIXA DE DINHEIRO">
-                </div>
-                <p style="color: red; font-weight: bold; margin-top: 15px;">OBJETIVO FINAL</p>
-            </div>
+        <div class="todo-box">
+            <div class="pin" style="background:#eab308;"></div>
+            <h4 contenteditable="true" style="margin: 0 0 10px 0; color: #b45309;">* TO DO *</h4>
+            <div class="todo-item"><input type="checkbox"> <span contenteditable="true">Escritório Principal</span></div>
+            <div class="todo-item"><input type="checkbox"> <span contenteditable="true">Conteúdo do Cofre</span></div>
+            <div class="todo-item"><input type="checkbox"> <span contenteditable="true">Selecionar Abordagem</span></div>
         </div>
 
-        <!-- Coluna 3: Seleção de Abordagem -->
-        <div class="coluna">
-            <h2>3. Rota de Fuga</h2>
-            
-            <div class="drop-zone" id="area-veiculos">
-                <div class="item" draggable="true" style="background-image: url('https://via.placeholder.com/120x90?text=Caminhao')">
-                    <input type="text" class="texto-objetivo" value="Rota do Caminhão">
-                </div>
-            </div>
-
-            <h3 style="font-size: 1rem;">Checklist (Clique para marcar)</h3>
-            <label><input type="checkbox"> Escolher Equipamento</label><br>
-            <label><input type="checkbox"> Identificar Guardas</label><br>
-            <label><input type="checkbox"> Escolher Rota de Fuga</label>
+        <div class="optional-box">
+            <div class="pin" style="background:#eab308;"></div>
+            <h4 contenteditable="true" style="margin: 0 0 10px 0; color: #b45309;">* OPTIONAL *</h4>
+            <div class="todo-item"><input type="checkbox"> <span contenteditable="true">Mapear Pontos de Acesso</span></div>
+            <div class="todo-item"><input type="checkbox"> <span contenteditable="true">Comprar Equipamentos</span></div>
         </div>
-
     </div>
 
-    <!-- Botão para adicionar novas imagens -->
-    <button class="btn-upload" id="btnUpload">+ Adicionar Foto</button>
-    <input type="file" id="inputFile" accept="image/*" style="display: none;">
+    <h2 class="section-title" contenteditable="true">* ACCESS POINTS SCOPED *</h2>
+    <div class="middle-section">
+        <div class="access-grid" id="accessGrid">
+            <div class="evidence-card" draggable="true" onclick="triggerUpload(this)">
+                <div class="pin"></div>
+                <img src="https://via.placeholder.com/150" alt="Acesso">
+                <input type="file" accept="image/*" onchange="previewImage(event, this)">
+                <input type="text" value="Porta Principal" onclick="event.stopPropagation()">
+            </div>
+            <div class="evidence-card" draggable="true" onclick="triggerUpload(this)">
+                <div class="pin"></div>
+                <img src="https://via.placeholder.com/150" alt="Acesso">
+                <input type="file" accept="image/*" onchange="previewImage(event, this)">
+                <input type="text" value="Portas Laterais" onclick="event.stopPropagation()">
+            </div>
+            <div class="evidence-card" draggable="true" onclick="triggerUpload(this)">
+                <div class="pin"></div>
+                <img src="https://via.placeholder.com/150" alt="Acesso">
+                <input type="file" accept="image/*" onchange="previewImage(event, this)">
+                <input type="text" value="Túnel de Esgoto" onclick="event.stopPropagation()">
+            </div>
+            <div class="evidence-card" draggable="true" onclick="triggerUpload(this)">
+                <div class="pin"></div>
+                <img src="https://via.placeholder.com/150" alt="Acesso">
+                <input type="file" accept="image/*" onchange="previewImage(event, this)">
+                <input type="text" value="Terraço" onclick="event.stopPropagation()">
+            </div>
+            <div class="evidence-card" draggable="true" onclick="triggerUpload(this)">
+                <div class="pin"></div>
+                <img src="https://via.placeholder.com/150" alt="Acesso">
+                <input type="file" accept="image/*" onchange="previewImage(event, this)">
+                <input type="text" value="Túnel de Segurança" onclick="event.stopPropagation()">
+            </div>
+            <div class="evidence-card" draggable="true" onclick="triggerUpload(this)">
+                <div class="pin"></div>
+                <img src="https://via.placeholder.com/150" alt="Acesso">
+                <input type="file" accept="image/*" onchange="previewImage(event, this)">
+                <input type="text" value="Telhado" onclick="event.stopPropagation()">
+            </div>
+        </div>
 
-    <!-- Lógica JavaScript -->
-    <script>
-        // 1. Lógica de Arrastar e Soltar (Drag and Drop)
-        const draggables = document.querySelectorAll('.item');
-        const dropZones = document.querySelectorAll('.drop-zone');
+        <div class="evidence-card" style="border: 2px dashed #dc2626;" onclick="triggerUpload(this)">
+            <div class="pin"></div>
+            <h4 contenteditable="true" style="margin:0 0 5px 0; color:#dc2626; font-size:0.8rem;">* TARGET *</h4>
+            <img src="https://via.placeholder.com/150" alt="Alvo" style="height: 120px;">
+            <input type="file" accept="image/*" onchange="previewImage(event, this)">
+            <input type="text" value="Dinheiro / Ouro" onclick="event.stopPropagation()">
+        </div>
 
-        function setupDragEvents(item) {
-            item.addEventListener('dragstart', () => {
-                item.classList.add('dragging');
-            });
+        <div class="todo-box">
+            <div class="pin" style="background:#eab308;"></div>
+            <h4 contenteditable="true" style="margin: 0 0 10px 0; color: #b45309;">* EXTRAS *</h4>
+            <div class="evidence-card" style="margin-bottom: 10px;" onclick="triggerUpload(this)">
+                <img src="https://via.placeholder.com/150" alt="Extra" style="height: 60px;">
+                <input type="file" accept="image/*" onchange="previewImage(event, this)">
+                <input type="text" value="Maquete do Local" onclick="event.stopPropagation()">
+            </div>
+        </div>
+    </div>
 
-            item.addEventListener('dragend', () => {
-                item.classList.remove('dragging');
-            });
+    <h2 class="section-title" contenteditable="true">* SELECT APPROACH *</h2>
+    <div class="approach-section">
+        <div class="approach-card" onclick="triggerUpload(this)">
+            <div class="pin" style="background:#eab308;"></div>
+            <img src="https://via.placeholder.com/200x120" alt="Abordagem">
+            <input type="file" accept="image/*" onchange="previewImage(event, this)">
+            <h4 contenteditable="true" style="font-size:0.85rem; margin:8px 0 3px 0;">Silencioso & Furtivo</h4>
+            <p contenteditable="true" style="font-size:0.7rem; color:#6b7280; margin:0;">Entrar sem ser visto e roubar sem disparar alarmes.</p>
+        </div>
+        <div class="approach-card" onclick="triggerUpload(this)">
+            <div class="pin" style="background:#eab308;"></div>
+            <img src="https://via.placeholder.com/200x120" alt="Abordagem">
+            <input type="file" accept="image/*" onchange="previewImage(event, this)">
+            <h4 contenteditable="true" style="font-size:0.85rem; margin:8px 0 3px 0;">O Grande Golpe (Disfarces)</h4>
+            <p contenteditable="true" style="font-size:0.7rem; color:#6b7280; margin:0;">Entrar usando disfarces e truques elaborados.</p>
+        </div>
+        <div class="approach-card" onclick="triggerUpload(this)">
+            <div class="pin" style="background:#eab308;"></div>
+            <img src="https://via.placeholder.com/200x120" alt="Abordagem">
+            <input type="file" accept="image/*" onchange="previewImage(event, this)">
+            <h4 contenteditable="true" style="font-size:0.85rem; margin:8px 0 3px 0;">Agressivo (Força Bruta)</h4>
+            <p contenteditable="true" style="font-size:0.7rem; color:#6b7280; margin:0;">Entrar atirando e abrindo o cofre à força.</p>
+        </div>
+    </div>
+
+    <div class="help-tip">
+        💡 <strong>Dica:</strong> Clique em qualquer foto para carregar uma imagem do seu PC. Clique em qualquer texto para editá-lo. Arraste os cartões de evidência para reorganizá-los.
+    </div>
+</div>
+
+<script>
+    // Função para acionar o seletor de arquivos ao clicar no card de evidência/abordagem
+    function triggerUpload(cardElement) {
+        const fileInput = cardElement.querySelector('input[type="file"]');
+        if (fileInput) {
+            fileInput.click();
         }
+    }
 
-        draggables.forEach(setupDragEvents);
-
-        dropZones.forEach(zone => {
-            zone.addEventListener('dragover', e => {
-                e.preventDefault();
-                const dragging = document.querySelector('.dragging');
-                if (dragging) {
-                    zone.appendChild(dragging);
+    // Função para alterar a pré-visualização da imagem escolhida pelo usuário
+    function previewImage(event, inputElement) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = inputElement.parentElement.querySelector('img');
+                if (img) {
+                    img.src = e.target.result;
                 }
-            });
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Lógica simples de Drag and Drop para reorganizar os cartões de acesso
+    const cards = document.querySelectorAll('.evidence-card');
+    let draggedCard = null;
+
+    cards.forEach(card => {
+        card.addEventListener('dragstart', function() {
+            draggedCard = this;
+            setTimeout(() => this.style.opacity = '0.4', 0);
         });
 
-        // 2. Lógica de Upload de Imagens do Computador
-        const btnUpload = document.getElementById('btnUpload');
-        const inputFile = document.getElementById('inputFile');
-
-        btnUpload.addEventListener('click', () => {
-            inputFile.click();
+        card.addEventListener('dragend', function() {
+            this.style.opacity = '1';
+            draggedCard = null;
         });
 
-        inputFile.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                
-                reader.onload = (event) => {
-                    // Cria um novo item arrastável com a imagem escolhida
-                    const novoItem = document.createElement('div');
-                    novoItem.className = 'item';
-                    novoItem.draggable = true;
-                    novoItem.style.backgroundImage = `url(${event.target.result})`;
-                    
-                    // Adiciona o campo de texto para o nome do objetivo
-                    const inputTexto = document.createElement('input');
-                    inputTexto.type = 'text';
-                    inputTexto.className = 'texto-objetivo';
-                    inputTexto.placeholder = 'Nome do objetivo...';
-                    
-                    novoItem.appendChild(inputTexto);
-                    
-                    // Aplica a lógica de arrastar no novo item criado
-                    setupDragEvents(novoItem);
+        card.addEventListener('dragover', function(e) {
+            e.preventDefault();
+        });
 
-                    // Coloca na primeira área de soltar por padrão
-                    document.querySelector('.drop-zone').appendChild(novoItem);
-                    
-                    // Limpa o input para poder adicionar a mesma imagem novamente depois
-                    inputFile.value = '';
-                };
-                
-                reader.readAsDataURL(file);
+        card.addEventListener('drop', function() {
+            if (draggedCard !== this && this.parentElement === draggedCard.parentElement) {
+                this.parentNode.insertBefore(draggedCard, this.nextSibling);
             }
         });
-    </script>
+    });
+</script>
+
 </body>
 </html>
