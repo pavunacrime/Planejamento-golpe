@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planejamento - Cassino</title>
+    <title>TOBO - Planejamento</title>
     <style>
-        /* RESET */
         * {
             margin: 0;
             padding: 0;
@@ -23,255 +22,178 @@
         }
 
         .card {
-            background: #0b0b0b;
-            border: 2px solid #2a2a2a;
-            border-radius: 12px;
-            padding: 28px 32px 32px 32px;
-            max-width: 700px;
+            background: #0d0d0d;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            padding: 30px 35px 35px 35px;
+            max-width: 620px;
             width: 100%;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
         }
 
-        /* TÍTULO PRINCIPAL */
         .main-title {
-            font-size: 42px;
-            font-weight: 800;
-            letter-spacing: 6px;
-            color: #f0c040;
-            text-shadow: 0 0 6px #f0c04055, 0 0 12px #f0c04022;
-            margin-bottom: 20px;
+            font-size: 48px;
+            font-weight: 900;
+            letter-spacing: 10px;
+            color: #e8b830;
+            margin-bottom: 18px;
             text-transform: uppercase;
-            border-bottom: 2px solid #2a2a2a;
-            padding-bottom: 8px;
         }
 
-        /* LINHA DE MISSÃO (Scope Out Casino / etc) */
         .mission-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 18px 30px;
-            margin-bottom: 24px;
+            gap: 6px 28px;
+            margin-bottom: 22px;
+            border-bottom: 1px solid #222;
+            padding-bottom: 16px;
         }
 
         .mission-item {
-            color: #ccc;
-            font-size: 15px;
-            font-weight: 500;
-            letter-spacing: 0.5px;
+            color: #e8b830;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
             text-transform: uppercase;
         }
 
-        .mission-item .highlight {
-            color: #f0c040;
-            font-weight: 700;
-        }
-
-        /* SEÇÃO OPTIONAL */
         .optional-section {
-            background: #121212;
-            border-left: 3px solid #f0c040;
-            padding: 12px 16px;
-            margin-bottom: 24px;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: baseline;
-            gap: 8px 20px;
+            margin-bottom: 22px;
+            border-bottom: 1px solid #222;
+            padding-bottom: 14px;
         }
 
         .optional-label {
             color: #888;
+            font-size: 13px;
             font-weight: 600;
-            font-size: 14px;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             text-transform: uppercase;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .optional-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 28px;
         }
 
         .optional-item {
-            color: #bbb;
+            color: #ccc;
             font-size: 14px;
             font-weight: 400;
         }
 
-        .optional-item strong {
-            color: #f0c040;
-            font-weight: 600;
-        }
-
         .optional-item .number {
-            color: #f0c040;
+            color: #e8b830;
             font-weight: 700;
-            font-size: 16px;
+            margin-left: 2px;
         }
 
-        /* ACESS POINTS SCOPED */
-        .access-points {
-            background: #141414;
-            border: 1px solid #2a2a2a;
-            border-radius: 6px;
-            padding: 14px 18px;
-            margin-bottom: 24px;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 12px 24px;
+        .access-section {
+            margin-bottom: 22px;
+            border-bottom: 1px solid #222;
+            padding-bottom: 14px;
         }
 
         .access-title {
             color: #888;
-            font-weight: 600;
             font-size: 13px;
-            letter-spacing: 1px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
             text-transform: uppercase;
+            display: block;
+            margin-bottom: 6px;
         }
 
-        .access-list {
+        .access-items {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px 20px;
+            gap: 6px 28px;
         }
 
         .access-item {
             color: #ddd;
             font-size: 15px;
-            font-weight: 500;
-            padding: 2px 6px;
-            border-bottom: 2px solid transparent;
-            transition: 0.2s;
+            font-weight: 700;
         }
 
-        .access-item.done {
-            border-bottom-color: #f0c040;
-            color: #f0c040;
-        }
-
-        /* SELECT APPROACH */
         .approach-section {
             margin-bottom: 24px;
+            border-bottom: 1px solid #222;
+            padding-bottom: 16px;
         }
 
         .approach-title {
             color: #888;
-            font-weight: 600;
             font-size: 13px;
-            letter-spacing: 1px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
             text-transform: uppercase;
-            margin-bottom: 8px;
+            display: block;
+            margin-bottom: 6px;
         }
 
-        .approach-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
+        .approach-items {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
         }
 
-        .approach-card {
-            background: #141414;
-            border: 1px solid #2a2a2a;
-            border-radius: 6px;
-            padding: 12px 14px;
-            color: #aaa;
+        .approach-item {
+            color: #ccc;
             font-size: 14px;
             font-weight: 400;
-            transition: 0.15s;
-            cursor: default;
+            padding: 2px 0;
         }
 
-        .approach-card .highlight {
-            color: #f0c040;
-            font-weight: 600;
+        .approach-item .highlight {
+            color: #e8b830;
+            font-weight: 700;
         }
 
-        .approach-card:hover {
-            border-color: #f0c04055;
-            background: #1a1a1a;
-        }
-
-        /* POLI SCOPE + EXTRAS + TARGET */
-        .bottom-row {
+        .footer {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            justify-content: space-between;
-            gap: 16px 10px;
-            border-top: 2px solid #1f1f1f;
-            padding-top: 18px;
-            margin-top: 6px;
+            gap: 10px 28px;
+            padding-top: 4px;
         }
 
-        .poli-scope {
+        .footer-item {
             color: #888;
-            font-weight: 600;
             font-size: 13px;
-            letter-spacing: 1px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
             text-transform: uppercase;
         }
 
-        .poli-scope span {
-            color: #f0c040;
+        .footer-item .value {
+            color: #e8b830;
             font-weight: 700;
         }
 
-        .extras {
-            color: #888;
-            font-weight: 600;
-            font-size: 13px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .extras span {
-            color: #ddd;
-            font-weight: 400;
-        }
-
-        .target-group {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .target-item {
-            color: #888;
-            font-weight: 600;
-            font-size: 13px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .target-item .value {
-            color: #f0c040;
-            font-weight: 700;
-            margin-left: 4px;
-        }
-
-        .target-item .lock {
-            color: #f0c040;
-            font-weight: 700;
-            margin-left: 4px;
-        }
-
-        /* RESPONSIVO */
-        @media (max-width: 550px) {
+        @media (max-width: 500px) {
             .card {
                 padding: 20px 16px;
             }
 
             .main-title {
-                font-size: 32px;
-                letter-spacing: 4px;
+                font-size: 36px;
+                letter-spacing: 6px;
             }
 
-            .approach-grid {
-                grid-template-columns: 1fr;
+            .mission-row {
+                gap: 4px 16px;
             }
 
-            .bottom-row {
-                flex-direction: column;
-                align-items: flex-start;
+            .optional-items,
+            .access-items {
+                gap: 4px 16px;
             }
 
-            .target-group {
-                flex-wrap: wrap;
+            .footer {
+                gap: 6px 16px;
             }
         }
     </style>
@@ -279,57 +201,50 @@
 <body>
     <div class="card">
 
-        <!-- T O B O -->
-        <div class="main-title">T O B O</div>
+        <div class="main-title">TOBO</div>
 
-        <!-- Scope Out Casino / Scope Out Vault Contents / Select Approach -->
         <div class="mission-row">
-            <div class="mission-item"><span class="highlight">●</span> Scope Out Casino</div>
-            <div class="mission-item"><span class="highlight">●</span> Scope Out Vault Contents</div>
-            <div class="mission-item"><span class="highlight">●</span> Select Approach</div>
+            <span class="mission-item">INVESTIGAR CASINO</span>
+            <span class="mission-item">INVESTIGAR COFRE</span>
+            <span class="mission-item">SELECIONAR ABORDAGEM</span>
         </div>
 
-        <!-- OPTIONAL -->
         <div class="optional-section">
-            <span class="optional-label">OPTIONAL</span>
-            <span class="optional-item"><strong>●</strong> Scope All Pairs</span>
-            <span class="optional-item"><strong>●</strong> Scope All Access Points</span>
-            <span class="optional-item"><strong>●</strong> Purchase Casino Model</span>
-            <span class="optional-item"><strong>●</strong> Purchase Security Level</span>
-            <span class="optional-item"><span class="number">777</span></span>
-        </div>
-
-        <!-- ACCESS POINTS SCOPED -->
-        <div class="access-points">
-            <span class="access-title">ACCESS POINTS SCOPED</span>
-            <div class="access-list">
-                <span class="access-item done">White Tower</span>
-                <span class="access-item done">Salt House</span>
-                <span class="access-item done">Sewer Tunnel</span>
-                <span class="access-item done">Cash</span>
+            <span class="optional-label">OPCIONAL</span>
+            <div class="optional-items">
+                <span class="optional-item">Investigar Todos os Pares</span>
+                <span class="optional-item">Investigar Todos os Acessos</span>
+                <span class="optional-item">Comprar Planta do Cassino</span>
+                <span class="optional-item">Comprar Nível de Segurança <span class="number">777</span></span>
             </div>
         </div>
 
-        <!-- SELECT APPROACH -->
+        <div class="access-section">
+            <span class="access-title">PONTOS DE ACESSO INVESTIGADOS</span>
+            <div class="access-items">
+                <span class="access-item">Torre Branca</span>
+                <span class="access-item">Casa do Sal</span>
+                <span class="access-item">Túnel do Esgoto</span>
+                <span class="access-item">Dinheiro</span>
+            </div>
+        </div>
+
         <div class="approach-section">
-            <div class="approach-title">SELECT APPROACH</div>
-            <div class="approach-grid">
-                <div class="approach-card"><span class="highlight">●</span> A visiting card for a casino's premises</div>
-                <div class="approach-card"><span class="highlight">●</span> Short &amp; Scanty</div>
-                <div class="approach-card"><span class="highlight">●</span> Rafting only trikes and skis</div>
-                <div class="approach-card"><span class="highlight">●</span> The Big Cat</div>
+            <span class="approach-title">SELECIONAR ABORDAGEM</span>
+            <div class="approach-items">
+                <span class="approach-item"><span class="highlight">-</span> Um cartão de visita para o cassino</span>
+                <span class="approach-item"><span class="highlight">-</span> Curto &amp; Escasso</span>
+                <span class="approach-item"><span class="highlight">-</span> Apenas botes, triciclos e esquis</span>
+                <span class="approach-item"><span class="highlight">-</span> O Grande Gato</span>
             </div>
         </div>
 
-        <!-- POLI SCOPE / EXTRAS / TARGET -->
-        <div class="bottom-row">
-            <div class="poli-scope">POLI SCOPE <span>●</span></div>
-            <div class="extras">EXTRAS <span>●</span></div>
-            <div class="target-group">
-                <div class="target-item">TARGET <span class="value">●</span></div>
-                <div class="target-item">CASINO MODE <span class="value">●</span></div>
-                <div class="target-item">LOCK SECURITY <span class="lock">●</span></div>
-            </div>
+        <div class="footer">
+            <span class="footer-item">POLI ESCOPO</span>
+            <span class="footer-item">EXTRAS</span>
+            <span class="footer-item">ALVO</span>
+            <span class="footer-item">MODO CASINO</span>
+            <span class="footer-item">BLOQUEAR SEGURANÇA</span>
         </div>
 
     </div>
