@@ -3,234 +3,335 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Gastos Avançado</title>
-    <!-- Biblioteca PDF.js para ler arquivos PDF direto no navegador -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <title>Planejamento - Cassino</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .container { width: 100%; max-width: 500px; background: #1e293b; padding: 20px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.4); }
-        h1, h2 { text-align: center; color: #60a5fa; }
-        .card { background: #334155; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
-        label { display: block; margin-top: 8px; font-size: 13px; color: #94a3b8; }
-        input, select, button { width: 100%; padding: 10px; margin-top: 4px; margin-bottom: 8px; border: none; border-radius: 6px; box-sizing: border-box; }
-        input, select { background: #1e293b; color: #fff; border: 1px solid #475569; }
-        button { background: #3b82f6; color: #fff; font-weight: bold; cursor: pointer; transition: background 0.2s; }
-        button:hover { background: #2563eb; }
-        .btn-pdf { background: #8b5cf6; }
-        .btn-pdf:hover { background: #7c3aed; }
-        ul { list-style: none; padding: 0; max-height: 200px; overflow-y: auto; }
-        li { background: #334155; margin-top: 6px; padding: 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #3b82f6; }
-        .info-gasto { font-size: 14px; }
-        .data-gasto { font-size: 11px; color: #94a3b8; }
-        .total-box { font-size: 18px; font-weight: bold; text-align: center; margin-top: 15px; color: #34d399; }
+        /* RESET */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+        }
+
+        body {
+            background: #1a1a1a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .card {
+            background: #0b0b0b;
+            border: 2px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 28px 32px 32px 32px;
+            max-width: 700px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+        }
+
+        /* TÍTULO PRINCIPAL */
+        .main-title {
+            font-size: 42px;
+            font-weight: 800;
+            letter-spacing: 6px;
+            color: #f0c040;
+            text-shadow: 0 0 6px #f0c04055, 0 0 12px #f0c04022;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #2a2a2a;
+            padding-bottom: 8px;
+        }
+
+        /* LINHA DE MISSÃO (Scope Out Casino / etc) */
+        .mission-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px 30px;
+            margin-bottom: 24px;
+        }
+
+        .mission-item {
+            color: #ccc;
+            font-size: 15px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .mission-item .highlight {
+            color: #f0c040;
+            font-weight: 700;
+        }
+
+        /* SEÇÃO OPTIONAL */
+        .optional-section {
+            background: #121212;
+            border-left: 3px solid #f0c040;
+            padding: 12px 16px;
+            margin-bottom: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 8px 20px;
+        }
+
+        .optional-label {
+            color: #888;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .optional-item {
+            color: #bbb;
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        .optional-item strong {
+            color: #f0c040;
+            font-weight: 600;
+        }
+
+        .optional-item .number {
+            color: #f0c040;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        /* ACESS POINTS SCOPED */
+        .access-points {
+            background: #141414;
+            border: 1px solid #2a2a2a;
+            border-radius: 6px;
+            padding: 14px 18px;
+            margin-bottom: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px 24px;
+        }
+
+        .access-title {
+            color: #888;
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .access-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 20px;
+        }
+
+        .access-item {
+            color: #ddd;
+            font-size: 15px;
+            font-weight: 500;
+            padding: 2px 6px;
+            border-bottom: 2px solid transparent;
+            transition: 0.2s;
+        }
+
+        .access-item.done {
+            border-bottom-color: #f0c040;
+            color: #f0c040;
+        }
+
+        /* SELECT APPROACH */
+        .approach-section {
+            margin-bottom: 24px;
+        }
+
+        .approach-title {
+            color: #888;
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .approach-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .approach-card {
+            background: #141414;
+            border: 1px solid #2a2a2a;
+            border-radius: 6px;
+            padding: 12px 14px;
+            color: #aaa;
+            font-size: 14px;
+            font-weight: 400;
+            transition: 0.15s;
+            cursor: default;
+        }
+
+        .approach-card .highlight {
+            color: #f0c040;
+            font-weight: 600;
+        }
+
+        .approach-card:hover {
+            border-color: #f0c04055;
+            background: #1a1a1a;
+        }
+
+        /* POLI SCOPE + EXTRAS + TARGET */
+        .bottom-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px 10px;
+            border-top: 2px solid #1f1f1f;
+            padding-top: 18px;
+            margin-top: 6px;
+        }
+
+        .poli-scope {
+            color: #888;
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .poli-scope span {
+            color: #f0c040;
+            font-weight: 700;
+        }
+
+        .extras {
+            color: #888;
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .extras span {
+            color: #ddd;
+            font-weight: 400;
+        }
+
+        .target-group {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .target-item {
+            color: #888;
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .target-item .value {
+            color: #f0c040;
+            font-weight: 700;
+            margin-left: 4px;
+        }
+
+        .target-item .lock {
+            color: #f0c040;
+            font-weight: 700;
+            margin-left: 4px;
+        }
+
+        /* RESPONSIVO */
+        @media (max-width: 550px) {
+            .card {
+                padding: 20px 16px;
+            }
+
+            .main-title {
+                font-size: 32px;
+                letter-spacing: 4px;
+            }
+
+            .approach-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bottom-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .target-group {
+                flex-wrap: wrap;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Controle de Gastos</h1>
+    <div class="card">
 
-        <!-- Seção de Importação de PDF -->
-        <div class="card" style="border-left: 4px solid #8b5cf6;">
-            <label><strong>Importar Extrato/Fatura em PDF:</strong></label>
-            <input type="file" id="pdfFile" accept=".pdf">
-            <button class="btn-pdf" onclick="lerPDF()">Ler e Extrair do PDF</button>
-            <small style="color: #94a3b8; font-size: 11px;">O sistema tentará identificar datas e valores automaticamente.</small>
+        <!-- T O B O -->
+        <div class="main-title">T O B O</div>
+
+        <!-- Scope Out Casino / Scope Out Vault Contents / Select Approach -->
+        <div class="mission-row">
+            <div class="mission-item"><span class="highlight">●</span> Scope Out Casino</div>
+            <div class="mission-item"><span class="highlight">●</span> Scope Out Vault Contents</div>
+            <div class="mission-item"><span class="highlight">●</span> Select Approach</div>
         </div>
 
-        <!-- Formulário Manual -->
-        <div class="card">
-            <label>Descrição do Gasto:</label>
-            <input type="text" id="descricao" placeholder="Ex: Supermercado, Aluguel...">
-            
-            <label>Valor (R$):</label>
-            <input type="number" id="valor" step="0.01" placeholder="0.00">
-
-            <label>Data:</label>
-            <input type="date" id="data">
-
-            <button onclick="adicionarGastoManual()">Adicionar Gasto</button>
+        <!-- OPTIONAL -->
+        <div class="optional-section">
+            <span class="optional-label">OPTIONAL</span>
+            <span class="optional-item"><strong>●</strong> Scope All Pairs</span>
+            <span class="optional-item"><strong>●</strong> Scope All Access Points</span>
+            <span class="optional-item"><strong>●</strong> Purchase Casino Model</span>
+            <span class="optional-item"><strong>●</strong> Purchase Security Level</span>
+            <span class="optional-item"><span class="number">777</span></span>
         </div>
 
-        <!-- Filtro por Mês -->
-        <div style="display: flex; gap: 10px; align-items: center;">
-            <label style="margin:0; white-space:nowrap;">Filtrar Mês:</label>
-            <select id="filtroMes" onchange="atualizarLista()">
-                <option value="todos">Todos os Meses</option>
-                <option value="01">Janeiro</option>
-                <option value="02">Fevereiro</option>
-                <option value="03">Março</option>
-                <option value="04">Abril</option>
-                <option value="05">Maio</option>
-                <option value="06">Junho</option>
-                <option value="07">Julho</option>
-                <option value="08">Agosto</option>
-                <option value="09">Setembro</option>
-                <option value="10">Outubro</option>
-                <option value="11">Novembro</option>
-                <option value="12">Dezembro</option>
-            </select>
+        <!-- ACCESS POINTS SCOPED -->
+        <div class="access-points">
+            <span class="access-title">ACCESS POINTS SCOPED</span>
+            <div class="access-list">
+                <span class="access-item done">White Tower</span>
+                <span class="access-item done">Salt House</span>
+                <span class="access-item done">Sewer Tunnel</span>
+                <span class="access-item done">Cash</span>
+            </div>
         </div>
 
-        <h3>Histórico de Gastos:</h3>
-        <ul id="lista"></ul>
-        <div class="total-box" id="total">Total: R$ 0,00</div>
+        <!-- SELECT APPROACH -->
+        <div class="approach-section">
+            <div class="approach-title">SELECT APPROACH</div>
+            <div class="approach-grid">
+                <div class="approach-card"><span class="highlight">●</span> A visiting card for a casino's premises</div>
+                <div class="approach-card"><span class="highlight">●</span> Short &amp; Scanty</div>
+                <div class="approach-card"><span class="highlight">●</span> Rafting only trikes and skis</div>
+                <div class="approach-card"><span class="highlight">●</span> The Big Cat</div>
+            </div>
+        </div>
+
+        <!-- POLI SCOPE / EXTRAS / TARGET -->
+        <div class="bottom-row">
+            <div class="poli-scope">POLI SCOPE <span>●</span></div>
+            <div class="extras">EXTRAS <span>●</span></div>
+            <div class="target-group">
+                <div class="target-item">TARGET <span class="value">●</span></div>
+                <div class="target-item">CASINO MODE <span class="value">●</span></div>
+                <div class="target-item">LOCK SECURITY <span class="lock">●</span></div>
+            </div>
+        </div>
+
     </div>
-
-    <script>
-        // Configurar o PDF.js worker
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
-        // Carrega dados salvos no navegador (LocalStorage) ou array vazio
-        let gastos = JSON.parse(localStorage.getItem('gastos_cs')) || [];
-
-        // Preenche a data de hoje por padrão no input
-        document.getElementById('data').valueAsDate = new Date();
-
-        atualizarLista();
-
-        function adicionarGasto(desc, val, dataStr) {
-            if (!desc || isNaN(val) || !dataStr) return;
-            
-            gastos.push({
-                descricao: desc,
-                valor: parseFloat(val),
-                data: dataStr // formato "AAAA-MM-DD"
-            });
-
-            salvarEEstar();
-        }
-
-        function adicionarGastoManual() {
-            let desc = document.getElementById('descricao').value;
-            let val = document.getElementById('valor').value;
-            let dataStr = document.getElementById('data').value;
-
-            if (!desc || !val || !dataStr) {
-                alert('Preencha todos os campos!');
-                return;
-            }
-
-            adicionarGasto(desc, val, dataStr);
-
-            document.getElementById('descricao').value = '';
-            document.getElementById('valor').value = '';
-        }
-
-        function salvarEEstar() {
-            localStorage.setItem('gastos_cs', JSON.stringify(gastos));
-            atualizarLista();
-        }
-
-        function atualizarLista() {
-            let lista = document.getElementById('lista');
-            let filtro = document.getElementById('filtroMes').value;
-            lista.innerHTML = '';
-
-            let totalGeral = 0;
-
-            gastos.forEach((gasto, index) => {
-                let partesData = gasto.data.split('-'); // [Ano, Mes, Dia]
-                let mesGasto = partesData[1];
-
-                if (filtro === 'todos' || mesGasto === filtro) {
-                    totalGeral += gasto.valor;
-
-                    let item = document.createElement('li');
-                    item.innerHTML = `
-                        <div>
-                            <div class="info-gasto"><strong>${gasto.descricao}</strong></div>
-                            <div class="data-gasto">Data: ${gasto.data.split('-').reverse().join('/')}</div>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <span style="color: #f87171; font-weight: bold;">R$ ${gasto.valor.toFixed(2)}</span>
-                            <button onclick="removerGasto(${index})" style="background: #ef4444; width: auto; padding: 4px 8px; margin:0; font-size:11px;">X</button>
-                        </div>
-                    `;
-                    lista.appendChild(item);
-                }
-            });
-
-            document.getElementById('total').innerText = `Total: R$ ${totalGeral.toFixed(2)}`;
-        }
-
-        function removerGasto(index) {
-            gastos.splice(index, 1);
-            salvarEEstar();
-        }
-
-        // Função mágica para ler o PDF e extrair textos
-        async function lerPDF() {
-            let fileInput = document.getElementById('pdfFile');
-            if (fileInput.files.length === 0) {
-                alert('Selecione um arquivo PDF primeiro!');
-                return;
-            }
-
-            let file = fileInput.files[0];
-            let reader = new FileReader();
-
-            reader.onload = async function() {
-                let typedarray = new Uint8Array(this.result);
-                try {
-                    let pdf = await pdfjsLib.getDocument(typedarray).promise;
-                    let textoCompleto = '';
-
-                    for (let i = 1; i <= pdf.numPages; i++) {
-                        let page = await pdf.getPage(i);
-                        let textContent = await page.getTextContent();
-                        let pageText = textContent.items.map(item => item.str).join(' ');
-                        textoCompleto += pageText + '\n';
-                    }
-
-                    processarTextoExtrato(textoCompleto);
-                } catch (error) {
-                    alert('Erro ao ler o PDF. Certifique-se de que é um PDF válido.');
-                    console.error(error);
-                }
-            };
-
-            reader.readAsArrayBuffer(file);
-        }
-
-        // Lógica simples para extrair valores monetários e descrições aproximadas do texto do PDF
-        function processarTextoExtrato(texto) {
-            // Regex para encontrar valores em formato R$ XX,XX ou valores com ponto/vírgula em faturas
-            let regexValores = /(?:R\$\s*)?(\d{1,3}(?:\.\d{3})*,\d{2})/g;
-            let matches = [...texto.matchAll(regexValores)];
-
-            let encontrados = 0;
-            let dataHoje = new Date().toISOString().split('T')[0];
-
-            matches.forEach(match => {
-                let valorStr = match[1].replace(/\./g, '').replace(',', '.');
-                let valorNum = parseFloat(valorStr);
-
-                if (valorNum > 0 && valorNum < 50000) { // Filtro básico de segurança para valores absurdos
-                    // Pega um trecho de texto próximo ao valor para usar como descrição
-                    let indiceMatch = match.index;
-                    let trechoInicio = Math.max(0, indiceMatch - 40);
-                    let descricaoExtraida = texto.substring(trechoInicio, indiceMatch).trim();
-                    
-                    // Limpa caracteres estranhos da descrição
-                    descricaoExtraida = descricaoExtraida.replace(/[^a-zA-ZÀ-ÿ0-9\s]/g, '').trim();
-                    if (descricaoExtraida.length < 3) descricaoExtraida = "Gasto Importado PDF";
-
-                    gastos.push({
-                        descricao: descricaoExtraida,
-                        valor: valorNum,
-                        data: dataHoje
-                    });
-                    encontrados++;
-                }
-            });
-
-            if (encontrados > 0) {
-                salvarEEstar();
-                alert(`Sucesso! Foram importados ${encontrados} lançamentos aproximados do PDF. Revise a lista e ajuste se necessário.`);
-            } else {
-                alert('Não foi possível identificar valores automáticos claros neste PDF. Você pode cadastrar manualmente ou o formato do banco é muito fechado.');
-            }
-        }
-    </script>
 </body>
 </html>
